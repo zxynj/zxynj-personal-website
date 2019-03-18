@@ -46,11 +46,6 @@ user_groups = ["Researchers", "Visitors"]
   institution = "University of Arizona"
   year = 2016
 
-[[education.courses]]
-#  course = "BSc in Artificial Intelligence"
-#  institution = "Massachusetts Institute of Technology"
-#  year = 2008
-
 # Social/Academic Networking
 # For available icons, see: https://sourcethemes.com/academic/docs/widgets/#icons
 #   For an email link, use "fas" icon pack, "envelope" icon, and a link in the
@@ -74,7 +69,5 @@ user_groups = ["Researchers", "Visitors"]
    link = "files/cv.pdf"
 
 +++
-
-*About me*
 
 As a data analyst, I develope database solutions for differennt buisness tasks. I visualize data to give buisness insights. As a statistical problem solver, I use statistical approaches to answer questions. As a self-motivated person, I keep my curiosity alive and learn about any kind of statistical method a little bit more every day.
