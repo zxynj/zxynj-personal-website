@@ -70,4 +70,4 @@ user_groups = ["Researchers", "Visitors"]
 
 +++
 
-As a data analyst, I develope database solutions for differennt buisness tasks. I visualize data to give buisness insights. As a statistical problem solver, I use statistical approaches to answer questions. As a self-motivated person, I keep my curiosity alive and learn about any kind of statistical method a little bit more every day.
+As a data analyst, I develope database solutions for different business tasks. I visualize data to provide business insights. As a statistical problem solver, I use statistical approaches to answer questions and give explanations to my answer. As a self-motivated person, I keep my curiosity alive and learn about any kind of statistical method a bit more every day.

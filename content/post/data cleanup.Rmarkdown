@@ -1,0 +1,290 @@
+---
+title: "Data Cleanup"
+author: ''
+date: "January 12, 2019"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+```{r, echo=FALSE, message=FALSE}
+library(tidyverse)
+```
+
+### 1. Preperation
+
+Read in the data:
+
+```{r, echo=FALSE, message=FALSE}
+data <- read.table("E:/Self study/cas dq challenge/input/train.csv", sep=",", header=TRUE)
+```
+
+### 2. Data Cleanup
+
+Let's take a first look at the data:
+
+```{r, echo=FALSE}
+str(data)
+summary(data)
+head(data)
+```
+
+We see that Territory has levels other than "Metro", "Suburb" and "Rural". Vehicle_Type has levels other than "Car", "Truck" and "Utility". It also has missing values. Prior_Claim has missing values as well. Tenure has levels different from the directory ("New", "1-2", "3-4", "5-10" and "10+"). Safe_Driving_Course has levels other than "Yes", "No" and "Unknown". FB_Friends has missing values. Vehicle_Years has values other than 1. Bi_Indem has negative values. Also some of the variable types are wrong.
+
+#### 2.1 cleanup Vehicle_Type
+
+```{r, echo=FALSE}
+table(data$Tier,data$Vehicle_Type, useNA="always")
+```
+
+From the frequency table above, we see that all the missing values of Vehicle_Type belongs to Platinum. Silver has different notation for Vehicle_Type. Therefore, we will change those Vehicle_Type accordingly.
+
+```{r}
+data = data %>%
+  mutate(Vehicle_Type = case_when(Vehicle_Type=="SEDAN" ~ "Car",
+                                  Vehicle_Type=="PICKUP" ~ "Truck",
+                                  Vehicle_Type=="UTILITY" ~ "Utility",
+                                  Vehicle_Type=="" ~ NA_character_,
+                                  TRUE ~ as.character(Vehicle_Type)))
+```
+
+#### 2.2 cleanup Territory
+
+```{r, echo=FALSE}
+table(data$Tier,data$Territory, useNA="always")
+```
+
+From the frequency table above, we see that Gold has different notation for Territory. Let's look at the frequency ratio of car to truck, truck to truck and utility to truck for different Tier and Territory combinations to see if there is any pattern.
+
+```{r, echo=FALSE}
+data %>%
+  group_by(Tier,Territory) %>%
+  summarize(Car = sum(Vehicle_Type=="Car", na.rm = TRUE), Truck = sum(Vehicle_Type=="Truck", na.rm = TRUE), Utility = sum(Vehicle_Type=="Utility", na.rm = TRUE)) %>%
+  mutate(Car_to_Truck_ratio = Car/Truck, Truck_to_Truck_ratio = 1, Utility_to_Truck_ratio = Utility/Truck) %>%
+  select(Tier, Territory, Car_to_Truck_ratio, Truck_to_Truck_ratio, Utility_to_Truck_ratio)
+```
+
+We see that the three ratios are very close within the same Territory for different Tier. The three ratios for 101 is very close to Metro. The three ratios for 102 is very close to Suburb The three ratios for 103 is very close to Rural. Therefore, we will fix Territory accordingly.
+
+```{r}
+data = data %>%
+  mutate(Territory = case_when(Territory=="101" & Tier=="Gold" ~ "Metro",
+                               Territory=="102" & Tier=="Gold" ~ "Suburb",
+                               Territory=="103" & Tier=="Gold" ~ "Rural",
+                               TRUE ~ as.character(Territory)))
+```
+
+#### 2.3 cleanup Tenure
+
+Tenure can only take value "New", "1-2", "3-4", "5-10" and "10+". However, Excel automatically recognizes them as dates so they become "New", "2-Jan", "4-Mar", "10-May" and "10+" respectively. Data is imported to R after converting all columns to text in Excel, so these levels becomes "New", "43102", "43163", "43230" and "10+" respectively during the conversion. Therefore, we will fix Tenure accordingly.
+
+```{r}
+data = data %>%
+  mutate(Tenure = case_when(Tenure=="New" ~ "New",
+                   Tenure=="43102" ~ "1-2",
+                   Tenure=="43163" ~ "3-4",
+                   Tenure=="43230" ~ "5-10",
+                   Tenure=="10+" ~ "10+",
+                   TRUE ~ as.character(Tenure)))
+```
+
+#### 2.4 cleanup Safe_Driving_Course
+
+Safe_Driving_Course has values such as "SYS ERR 0", "SYS ERR 1"..., so it is reasonable to consider them as missing values. Therefore, we change them to NA.
+
+```{r}
+data = data %>%
+  mutate(Safe_Driving_Course = case_when(!(Safe_Driving_Course %in% c("Yes", "No", "Unknown")) ~ NA_character_,
+                                         TRUE ~ as.character(Safe_Driving_Course)))
+```
+
+```{r, echo=FALSE}
+prop.table(table(data$Tier,data$Safe_Driving_Course, useNA="always"),1)
+```
+
+From the proportion table ablove, we see that Bronze has 0 No and Unknown, but its Yes proportion is significantly larger than other Tier.
+
+#### 2.5 cleanup FB_Friends
+
+```{r, warning=FALSE}
+par(mfrow=c(2,3))
+hist(as.numeric(as.character(data$FB_Friends[data$Tier=="Bronze"])),
+     main="Histogram for Bronze Tier",xlab="FB_Friends")
+hist(as.numeric(as.character(data$FB_Friends[data$Tier=="Silver"])),
+     main="Histogram for Silver Tier",xlab="FB_Friends")
+hist(as.numeric(as.character(data$FB_Friends[data$Tier=="Gold"])),
+     main="Histogram for Gold Tier",xlab="FB_Friends")
+hist(as.numeric(as.character(data$FB_Friends[data$Tier=="Platinum"])),
+     main="Histogram for Platinum Tier",xlab="FB_Friends")
+hist(as.numeric(as.character(data$FB_Friends[data$Tier=="Diamond"])),
+     main="Histogram for Diamond Tier",xlab="FB_Friends")
+```
+
+We see that tiers other than Diamond has similar distribution of FB_Friends, while FB_Friends is 100 for all customers in Diamond. It does not make sense for an insurance company to only find people with 100 Facebook friends to insure, so the FB_Friends in Diamond is not the true value (probably the default value). Therefore, we change them to NA.
+
+```{r}
+data = data %>%
+  mutate(FB_Friends = case_when(FB_Friends=="NA" | Tier=="Diamond" ~ NA_character_,
+                                TRUE ~ as.character(FB_Friends)))
+```
+
+#### 2.6 cleanup Prior_Claim
+
+We change blanks in Prior_Claim to NA.
+
+```{r}
+data = data %>%
+  mutate(Prior_Claim = case_when(Prior_Claim=="" ~ NA_character_,
+                                 TRUE ~ as.character(Prior_Claim)))
+```
+
+#### 2.7 cleanup Vehicle_Years
+
+```{r, echo=FALSE}
+table(data$Tier,data$Vehicle_Years, useNA="always")
+```
+
+From the frequency table above, we see that only Diamond has values other than 1. Let's take a look at row with Vehicle_Years = 0.
+
+```{r, echo=FALSE}
+diamond_vy_0_ljoin = data %>% filter(Tier=="Diamond" & Vehicle_Years==0) %>%
+  left_join(data %>% filter(!(Tier=="Diamond" & Vehicle_Years==0)),
+            by = c("Tier","Year","Insured_First","Insured_Last","Territory","Deductible","Limit","Driver_Experience","Vehicle_Type",
+                   "Prior_Claim","Tenure","Number_Vehicles","Safe_Driving_Course","FB_Friends"))
+
+diamond_vy_0_ljoin_stacked =
+  rbind(diamond_vy_0_ljoin %>%
+          mutate(Vehicle_Years=Vehicle_Years.x, Bi_Indem=Bi_Indem.x, Bi_Alae=Bi_Alae.x, Pd_Indem=Pd_Indem.x, Pd_Alae=Pd_Alae.x) %>%
+          select(Tier,Year,Insured_First,Insured_Last,Territory,Deductible,Limit,Driver_Experience,Vehicle_Type,Prior_Claim,
+                 Tenure,Number_Vehicles,Safe_Driving_Course,FB_Friends,Vehicle_Years,Bi_Indem,Bi_Alae,Pd_Indem,Pd_Alae),
+        diamond_vy_0_ljoin %>%
+          mutate(Vehicle_Years=Vehicle_Years.y, Bi_Indem=Bi_Indem.y, Bi_Alae=Bi_Alae.y, Pd_Indem=Pd_Indem.y, Pd_Alae=Pd_Alae.y) %>%
+          select(Tier,Year,Insured_First,Insured_Last,Territory,Deductible,Limit,Driver_Experience,Vehicle_Type,Prior_Claim,
+                 Tenure,Number_Vehicles,Safe_Driving_Course,FB_Friends,Vehicle_Years,Bi_Indem,Bi_Alae,Pd_Indem,Pd_Alae)) %>%
+  arrange(Tier,Year,Insured_First,Insured_Last,Territory,Deductible,Limit,Driver_Experience,Vehicle_Type,Prior_Claim,
+          Tenure,Number_Vehicles,Safe_Driving_Course,FB_Friends,Vehicle_Years,Bi_Indem,Bi_Alae,Pd_Indem,Pd_Alae)
+
+head(diamond_vy_0_ljoin_stacked)
+```
+
+We found that every row in Diamond with Vehicle_Years = 0 has claim amount > 0. And for every one of these rows, there is an other row in Diamond with Vehicle_Years = 1 and claim amount = 0. One can see this from the rearranged data above.
+
+```{r, echo=FALSE}
+diamond_vy_0_rjoin = data %>% filter(Tier=="Diamond" & Vehicle_Years==0) %>%
+  right_join(data %>% filter(!(Tier=="Diamond" & Vehicle_Years==0)),
+            by = c("Tier","Year","Insured_First","Insured_Last","Territory","Deductible","Limit","Driver_Experience","Vehicle_Type",
+                   "Prior_Claim","Tenure","Number_Vehicles","Safe_Driving_Course","FB_Friends"))
+
+diamond_vy_0_rjoin_o =
+  diamond_vy_0_rjoin %>% filter(is.na(Vehicle_Years.x))
+
+table(diamond_vy_0_rjoin_o$Number_Vehicles,diamond_vy_0_rjoin_o$Vehicle_Years.y, useNA="always")
+```
+
+After removing the rows mentioned above, we found that Number_Vehicles = Vehicle_Years for the rest rows in Diamond. The above frequency table has Number_Vehicles as rows and Vehicle_Years as columns. Therefore, we fix Vehicle_Years accordingly.
+
+```{r}
+data =
+  data %>%
+  filter(Tier=="Diamond" & Vehicle_Years==0) %>%
+  right_join(data %>%
+               filter(!(Tier=="Diamond" & Vehicle_Years==0)),
+             by = c("Tier","Year","Insured_First","Insured_Last","Territory",
+                    "Deductible","Limit","Driver_Experience","Vehicle_Type","Prior_Claim",
+                    "Tenure","Number_Vehicles","Safe_Driving_Course","FB_Friends")) %>%
+  mutate(Vehicle_Years = 1,
+         Bi_Indem = case_when(is.na(Bi_Indem.x) ~ Bi_Indem.y,
+                              TRUE ~ Bi_Indem.x),
+         Bi_Alae = case_when(is.na(Bi_Alae.x) ~ Bi_Alae.y,
+                              TRUE ~ Bi_Alae.x),
+         Pd_Indem = case_when(is.na(Pd_Indem.x) ~ Pd_Indem.y,
+                              TRUE ~ Pd_Indem.x),
+         Pd_Alae = case_when(is.na(Pd_Alae.x) ~ Pd_Alae.y,
+                              TRUE ~ Pd_Alae.x)) %>%
+  select(Tier,Year,Insured_First,Insured_Last,Territory,Deductible,Limit,Driver_Experience,
+         Vehicle_Type,Prior_Claim,Tenure,Number_Vehicles,Safe_Driving_Course,FB_Friends,
+         Vehicle_Years,Bi_Indem,Bi_Alae,Pd_Indem,Pd_Alae)
+```
+
+#### 2.8 cleanup Bi_Indem
+
+```{r, echo=FALSE}
+bronze_bii_neg_ljoin = data %>% filter(Tier=="Bronze" & Bi_Indem<0) %>%
+  left_join(data %>% filter(!(Tier=="Bronze" & Bi_Indem<0)),
+            by = c("Tier","Year","Insured_First","Insured_Last","Territory","Deductible","Limit","Driver_Experience","Vehicle_Type",
+                   "Prior_Claim","Tenure","Number_Vehicles","Safe_Driving_Course","FB_Friends","Vehicle_Years"))
+
+bronze_bii_neg_ljoin_stacked =
+  rbind(bronze_bii_neg_ljoin %>%
+          mutate(Bi_Indem=Bi_Indem.x, Bi_Alae=Bi_Alae.x, Pd_Indem=Pd_Indem.x, Pd_Alae=Pd_Alae.x) %>%
+          select(Tier,Year,Insured_First,Insured_Last,Territory,Deductible,Limit,Driver_Experience,Vehicle_Type,Prior_Claim,
+                 Tenure,Number_Vehicles,Safe_Driving_Course,FB_Friends,Vehicle_Years,Bi_Indem,Bi_Alae,Pd_Indem,Pd_Alae),
+        bronze_bii_neg_ljoin %>%
+          mutate(Bi_Indem=Bi_Indem.y, Bi_Alae=Bi_Alae.y, Pd_Indem=Pd_Indem.y, Pd_Alae=Pd_Alae.y) %>%
+          select(Tier,Year,Insured_First,Insured_Last,Territory,Deductible,Limit,Driver_Experience,Vehicle_Type,Prior_Claim,
+                 Tenure,Number_Vehicles,Safe_Driving_Course,FB_Friends,Vehicle_Years,Bi_Indem,Bi_Alae,Pd_Indem,Pd_Alae)) %>%
+  arrange(Tier,Year,Insured_First,Insured_Last,Territory,Deductible,Limit,Driver_Experience,Vehicle_Type,Prior_Claim,
+          Tenure,Number_Vehicles,Safe_Driving_Course,FB_Friends,Vehicle_Years,Bi_Indem,Bi_Alae,Pd_Indem,Pd_Alae)
+
+head(bronze_bii_neg_ljoin_stacked)
+```
+
+There are random rows in Bronze with negative Bi_Indem. And these Bi_Indem are the same as the negative value of the Deductible on the same row. One can see this from the rearranged data above. Therefore, we fix Bi_Indem by deleting the redundant rows.
+
+```{r}
+data = data %>% filter(!(Bi_Indem < 0 & Tier == "Bronze"))
+```
+
+#### 2.9 Duplicate rows
+
+```{r, echo=FALSE}
+row_ct =
+  data %>%
+  group_by(Tier,Year,Insured_First,Insured_Last,Territory,Deductible,Limit,Driver_Experience,Vehicle_Type,Prior_Claim,
+           Tenure,Number_Vehicles,Safe_Driving_Course,FB_Friends,Vehicle_Years,Bi_Indem,Bi_Alae,Pd_Indem,Pd_Alae) %>%
+  tally()
+
+dup_rows =
+  row_ct  %>%
+  filter(n>1)%>%
+  uncount(n) %>%
+  arrange(Tier,Year,Insured_First,Insured_Last,Territory,Deductible,Limit,Driver_Experience,Vehicle_Type,Prior_Claim,
+          Tenure,Number_Vehicles,Safe_Driving_Course,FB_Friends,Vehicle_Years,Bi_Indem,Bi_Alae,Pd_Indem,Pd_Alae)
+
+head(dup_rows)
+
+table(row_ct$Tier, row_ct$n, useNA="always")
+```
+
+There are still 182 duplicate rows as shown in the rearranged data above. The frequency table has the row count as columns. It shows that all the duplicate rows have one extra row and are all in Platinum. Note that all these duplicate rows have missing Vehicle_Type, but not all rows in Platinum with missing Vehicle_Type have duplicate rows.
+
+We did not remove these duplicate rows because: 1. It is still possible that two people have exactly the same value for all the columns. 2. There is no obvious pattern in the way these rows are duplicated. 3. The proportion of duplicate rows are very small (364/98680 = 0.37%). We don't think our prediction will change much even these duplcate rows removed.
+
+#### 2.10 Adding ID
+
+Finally, we add IDs to all the customers in the data. Note that based on the reasoning in part 2.9, each row will represent a unique person.
+
+```{r}
+data = data %>%
+  mutate(ID = row_number()) %>%
+  select(ID, everything())
+```
+
+#### 2.11 Change variable type
+
+Correct variable type.
+
+```{r, warning=FALSE}
+data = data %>%
+  mutate(ID=as.factor(ID), Tier=as.factor(Tier), Year=as.factor(Year),
+         Insured_First=as.character(Insured_First), Insured_Last=as.character(Insured_Last),
+         Territory=as.factor(Territory), Deductible=as.numeric(Deductible),
+         Limit=as.numeric(Limit), Driver_Experience=as.factor(Driver_Experience),
+         Vehicle_Type=as.factor(Vehicle_Type), Prior_Claim=as.factor(Prior_Claim),
+         Tenure=as.factor(Tenure), Number_Vehicles=as.numeric(Number_Vehicles),
+         Safe_Driving_Course=as.factor(Safe_Driving_Course),
+         FB_Friends=as.numeric(FB_Friends), Vehicle_Years=as.numeric(Vehicle_Years),
+         Bi_Indem=as.numeric(Bi_Indem), Bi_Alae=as.numeric(Bi_Alae), Pd_Indem=as.numeric(Pd_Indem),
+         Pd_Alae=as.numeric(Pd_Alae))
+```
