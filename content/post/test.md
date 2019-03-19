@@ -15,12 +15,14 @@ output:
 $$
 \begin{aligned}
 obj(\widehat{W^{(t)}})
+&=LOSS(\widehat{W^{(t-1)}})
 \end{aligned}
 $$
 
 
 $$
 \begin{aligned}
-LOSS(\widehat{W^{(t-1)}})+\sum_i\frac{\partial LOSS(\widehat{W^{(t-1)}})}{\partial\widehat{W_i^{(t-1)}}}\widehat{f_{(t)}(x_i)}+\frac{1}{2}\sum_i\frac{\partial^2 LOSS(\widehat{W^{(t-1)}})}{\partial\widehat{W_i^{(t-1)}}^2}{\widehat{f_{(t)}(x_i)}}^2+\pi(\widehat{f_{(t)}})+constant
+obj(\widehat{W^{(t)}})
+&=LOSS(\widehat{W^{(t-1)}})+\sum\_i\frac{\partial LOSS(\widehat{W^{(t-1)}})}{\partial\widehat{W\_i^{(t-1)}}}\widehat{f\_{(t)}(x\_i)}+\frac{1}{2}\sum\_i\frac{\partial^2 LOSS(\widehat{W^{(t-1)}})}{\partial\widehat{W\_i^{(t-1)}}^2}{\widehat{f\_{(t)}(x\_i)}}^2+\pi(\widehat{f\_{(t)}})+constant
 \end{aligned}
 $$
