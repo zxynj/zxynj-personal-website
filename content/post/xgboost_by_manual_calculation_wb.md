@@ -5,16 +5,13 @@ date: "March 18, 2019"
 output:
   html_document:
     keep_md: true
-    toc: true
-    number_sections: true
-    toc_float: true
 ---
 
 
 
 In this post, I will explain xgoost algorithm and manually solve a simple binary classification problem using the algorithm.
 
-# Xgboost Algorithm for binary classification
+## Xgboost Algorithm for binary classification
 
 In generalized linear regression (GLM), we have $g(E[Y])=X\beta$ where the right hand side is the linear combination of predictors. In xgboost, it puts predictors into multiple trees (rounds) to come up with leaf score (weight) $w\_{ki}$ for each tree $k$ and observation $i$. $w\_{ki}$ is summed over all trees so that $w\_{\cdot{i}}$ is the final leaf score for observation $i$. The vector $W$ formed by these $W\_i=w\_{\cdot{i}}$ is what appears on the right hand side of $g(E[Y])=X\beta$ instead of $X\beta$. In GLM, the common link function for a response variable following a bernoulli distribution is the logit canonical link. Xgboost also uses the logit link when specifying the "binary:logistic" objective. In GLM, we maximize the log likelihood of the estimator $\widehat{\beta}$ to find the desired $\widehat{\beta}$. In xgboost, the log likelihood of $\widehat{W}$ is maximized which is equivalent to minimizing the loss function $LOSS(\widehat{W})=-l(\widehat{W})$.
 
@@ -114,13 +111,14 @@ $$
 
 Split is allowed only when we have a positive gain.
 
-# Match xgboost result with manual calculation
+## Match xgboost result with manual calculation
 
 The data set I used is the agaricus data set in xgboost library. To make everything simpler, I only used the first 2000 observations with the response variable = 1 and the first 3000 observations with the response variable = 0. Also, only the first three predictors (cap-shape=bell, cap-shape=conical and cap-shape=convex) are used in the model.
 
 
 ```r
 library(xgboost)
+library(DiagrammeR)
 data(agaricus.train, package='xgboost')
 data(agaricus.test, package='xgboost')
 
@@ -184,8 +182,8 @@ bst = xgboost(data = train_data,
 xgb.plot.tree(model=bst)
 ```
 
-<!--html_preserve--><div id="htmlwidget-8d09a06382d67c5b3542" style="width:672px;height:480px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-8d09a06382d67c5b3542">{"x":{"diagram":"digraph {\n\ngraph [layout = \"dot\",\n       rankdir = \"LR\"]\n\nnode [color = \"DimGray\",\n      style = \"filled\",\n      fontname = \"Helvetica\"]\n\nedge [color = \"DimGray\",\n     arrowsize = \"1.5\",\n     arrowhead = \"vee\",\n     fontname = \"Helvetica\"]\n\n  \"1\" [label = \"Tree 1\ncap-shape=bell\nCover: 1189.18127\nGain: 4.80300188\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"2\" [label = \"cap-shape=convex\nCover: 1147.43542\nGain: 0.0110983625\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"3\" [label = \"Leaf\nCover: 41.745903\nValue: -0.346059561\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"4\" [label = \"Leaf\nCover: 524.148438\nValue: -0.00805134326\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"5\" [label = \"Leaf\nCover: 623.286987\nValue: -0.00180733623\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"6\" [label = \"Tree 0\ncap-shape=bell\nCover: 1250\nGain: 75.0913696\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"7\" [label = \"cap-shape=convex\nCover: 1183.25\nGain: 9.77643013\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"8\" [label = \"Leaf\nCover: 66.75\nValue: -1.4243542\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"9\" [label = \"Leaf\nCover: 549.75\nValue: -0.438492954\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"10\" [label = \"Leaf\nCover: 633.5\nValue: -0.255319148\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n\"1\"->\"2\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"2\"->\"4\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"6\"->\"7\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"7\"->\"9\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"1\"->\"3\" [style = \"bold\", style = \"solid\"] \n\"2\"->\"5\" [style = \"solid\", style = \"solid\"] \n\"6\"->\"8\" [style = \"solid\", style = \"solid\"] \n\"7\"->\"10\" [style = \"solid\", style = \"solid\"] \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><!--/html_preserve-->
+<!--html_preserve--><div id="htmlwidget-be5f038d4e63f3f27de8" style="width:672px;height:480px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-be5f038d4e63f3f27de8">{"x":{"diagram":"digraph {\n\ngraph [layout = \"dot\",\n       rankdir = \"LR\"]\n\nnode [color = \"DimGray\",\n      style = \"filled\",\n      fontname = \"Helvetica\"]\n\nedge [color = \"DimGray\",\n     arrowsize = \"1.5\",\n     arrowhead = \"vee\",\n     fontname = \"Helvetica\"]\n\n  \"1\" [label = \"Tree 1\ncap-shape=bell\nCover: 1189.18127\nGain: 4.80300188\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"2\" [label = \"cap-shape=convex\nCover: 1147.43542\nGain: 0.0110983625\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"3\" [label = \"Leaf\nCover: 41.745903\nValue: -0.346059561\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"4\" [label = \"Leaf\nCover: 524.148438\nValue: -0.00805134326\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"5\" [label = \"Leaf\nCover: 623.286987\nValue: -0.00180733623\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"6\" [label = \"Tree 0\ncap-shape=bell\nCover: 1250\nGain: 75.0913696\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"7\" [label = \"cap-shape=convex\nCover: 1183.25\nGain: 9.77643013\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"8\" [label = \"Leaf\nCover: 66.75\nValue: -1.4243542\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"9\" [label = \"Leaf\nCover: 549.75\nValue: -0.438492954\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"10\" [label = \"Leaf\nCover: 633.5\nValue: -0.255319148\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n\"1\"->\"2\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"2\"->\"4\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"6\"->\"7\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"7\"->\"9\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"1\"->\"3\" [style = \"bold\", style = \"solid\"] \n\"2\"->\"5\" [style = \"solid\", style = \"solid\"] \n\"6\"->\"8\" [style = \"solid\", style = \"solid\"] \n\"7\"->\"10\" [style = \"solid\", style = \"solid\"] \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><!--/html_preserve-->
 
 The Gain is same as our Gain formula but without $\frac{1}{2}$.
 
