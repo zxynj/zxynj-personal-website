@@ -184,8 +184,8 @@ bst = xgboost(data = train_data,
 xgb.plot.tree(model=bst)
 ```
 
-<!--html_preserve--><div id="htmlwidget-e0c8e4976e83b49f395a" style="width:672px;height:480px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-e0c8e4976e83b49f395a">{"x":{"diagram":"digraph {\n\ngraph [layout = \"dot\",\n       rankdir = \"LR\"]\n\nnode [color = \"DimGray\",\n      style = \"filled\",\n      fontname = \"Helvetica\"]\n\nedge [color = \"DimGray\",\n     arrowsize = \"1.5\",\n     arrowhead = \"vee\",\n     fontname = \"Helvetica\"]\n\n  \"1\" [label = \"Tree 1\ncap-shape=bell\nCover: 1189.18127\nGain: 4.80300188\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"2\" [label = \"cap-shape=convex\nCover: 1147.43542\nGain: 0.0110983625\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"3\" [label = \"Leaf\nCover: 41.745903\nValue: -0.346059561\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"4\" [label = \"Leaf\nCover: 524.148438\nValue: -0.00805134326\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"5\" [label = \"Leaf\nCover: 623.286987\nValue: -0.00180733623\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"6\" [label = \"Tree 0\ncap-shape=bell\nCover: 1250\nGain: 75.0913696\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"7\" [label = \"cap-shape=convex\nCover: 1183.25\nGain: 9.77643013\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"8\" [label = \"Leaf\nCover: 66.75\nValue: -1.4243542\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"9\" [label = \"Leaf\nCover: 549.75\nValue: -0.438492954\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"10\" [label = \"Leaf\nCover: 633.5\nValue: -0.255319148\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n\"1\"->\"2\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"2\"->\"4\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"6\"->\"7\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"7\"->\"9\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"1\"->\"3\" [style = \"bold\", style = \"solid\"] \n\"2\"->\"5\" [style = \"solid\", style = \"solid\"] \n\"6\"->\"8\" [style = \"solid\", style = \"solid\"] \n\"7\"->\"10\" [style = \"solid\", style = \"solid\"] \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><!--/html_preserve-->
+<!--html_preserve--><div id="htmlwidget-8d09a06382d67c5b3542" style="width:672px;height:480px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-8d09a06382d67c5b3542">{"x":{"diagram":"digraph {\n\ngraph [layout = \"dot\",\n       rankdir = \"LR\"]\n\nnode [color = \"DimGray\",\n      style = \"filled\",\n      fontname = \"Helvetica\"]\n\nedge [color = \"DimGray\",\n     arrowsize = \"1.5\",\n     arrowhead = \"vee\",\n     fontname = \"Helvetica\"]\n\n  \"1\" [label = \"Tree 1\ncap-shape=bell\nCover: 1189.18127\nGain: 4.80300188\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"2\" [label = \"cap-shape=convex\nCover: 1147.43542\nGain: 0.0110983625\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"3\" [label = \"Leaf\nCover: 41.745903\nValue: -0.346059561\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"4\" [label = \"Leaf\nCover: 524.148438\nValue: -0.00805134326\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"5\" [label = \"Leaf\nCover: 623.286987\nValue: -0.00180733623\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"6\" [label = \"Tree 0\ncap-shape=bell\nCover: 1250\nGain: 75.0913696\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"7\" [label = \"cap-shape=convex\nCover: 1183.25\nGain: 9.77643013\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"8\" [label = \"Leaf\nCover: 66.75\nValue: -1.4243542\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"9\" [label = \"Leaf\nCover: 549.75\nValue: -0.438492954\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"10\" [label = \"Leaf\nCover: 633.5\nValue: -0.255319148\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n\"1\"->\"2\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"2\"->\"4\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"6\"->\"7\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"7\"->\"9\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"1\"->\"3\" [style = \"bold\", style = \"solid\"] \n\"2\"->\"5\" [style = \"solid\", style = \"solid\"] \n\"6\"->\"8\" [style = \"solid\", style = \"solid\"] \n\"7\"->\"10\" [style = \"solid\", style = \"solid\"] \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><!--/html_preserve-->
 
 The Gain is same as our Gain formula but without $\frac{1}{2}$.
 
@@ -258,14 +258,28 @@ Let's check out the report of other possible splits.
 
 
 ```
-## "cap-shape=conical" is used to make the split. The gain is 1.547051. The node cover is 1250. The left child node cover is 1249.5. The right child node cover is 0.5. The left leaf score is -0.4006397. The right leaf score is 0.6666667. The left leaf success probability is 0.4011586. The right leaf success probability is 0.6607564.
+## "cap-shape=conical" is used to make the split. The gain is 1.547051.
+## The node cover is 1250.
+## The left child node cover is 1249.5.
+## The right child node cover is 0.5.
+## The left leaf score is -0.4006397.
+## The right leaf score is 0.6666667.
+## The left leaf success probability is 0.4011586.
+## The right leaf success probability is 0.6607564.
 ```
 
 Since the right child node cover is smaller than the min_child_weight = 1, the split is not allowed.
 
 
 ```
-## "cap-shape=convex" is used to make the split. The gain is 26.5321. The node cover is 1250. The left child node cover is 616.5. The right child node cover is 633.5. The left leaf score is -0.5473684. The right leaf score is -0.2553191. The left leaf success probability is 0.3664752. The right leaf success probability is 0.4365147.
+## "cap-shape=convex" is used to make the split. The gain is 26.5321.
+## The node cover is 1250.
+## The left child node cover is 616.5.
+## The right child node cover is 633.5.
+## The left leaf score is -0.5473684.
+## The right leaf score is -0.2553191.
+## The left leaf success probability is 0.3664752.
+## The right leaf success probability is 0.4365147.
 ```
 
 Since "cap-shape=bell" gives the largest gain among all the allowed splits. We will use it to make the initial split of our tree.
@@ -274,14 +288,28 @@ Let's see the report for all possible splits for "cap-shape=bell" = 0.
 
 
 ```
-## "cap-shape=conical" is used to make the split. The gain is 1.407313. The node cover is 1183.25. The left child node cover is 1182.75. The right child node cover is 0.5. The left leaf score is -0.3417107. The right leaf score is 0.6666667. The left leaf success probability is 0.415394. The right leaf success probability is 0.6607564.
+## "cap-shape=conical" is used to make the split. The gain is 1.407313.
+## The node cover is 1183.25.
+## The left child node cover is 1182.75.
+## The right child node cover is 0.5.
+## The left leaf score is -0.3417107.
+## The right leaf score is 0.6666667.
+## The left leaf success probability is 0.415394.
+## The right leaf success probability is 0.6607564.
 ```
 
 Since the right child node cover is smaller than 1, the split is not allowed.
 
 
 ```
-## "cap-shape=convex" is used to make the split. The gain is 9.776436. The node cover is 1183.25. The left child node cover is 549.75. The right child node cover is 633.5. The left leaf score is -0.438493. The right leaf score is -0.2553191. The left leaf success probability is 0.3921001. The right leaf success probability is 0.4365147.
+## "cap-shape=convex" is used to make the split. The gain is 9.776436.
+## The node cover is 1183.25.
+## The left child node cover is 549.75.
+## The right child node cover is 633.5.
+## The left leaf score is -0.438493.
+## The right leaf score is -0.2553191.
+## The left leaf success probability is 0.3921001.
+## The right leaf success probability is 0.4365147.
 ```
 
 We will use this only allowed split.
@@ -290,7 +318,14 @@ Let's see the report for all possible split for "cap-shape=bell" = 0 and "cap-sh
 
 
 ```
-## "cap-shape=conical" is used to make the split. The gain is 1.642492. The node cover is 549.75. The left child node cover is 549.25. The right child node cover is 0.5. The left leaf score is -0.4407088. The right leaf score is 0.6666667. The left leaf success probability is 0.3915721. The right leaf success probability is 0.6607564.
+## "cap-shape=conical" is used to make the split. The gain is 1.642492.
+## The node cover is 549.75.
+## The left child node cover is 549.25.
+## The right child node cover is 0.5.
+## The left leaf score is -0.4407088.
+## The right leaf score is 0.6666667.
+## The left leaf success probability is 0.3915721.
+## The right leaf success probability is 0.6607564.
 ```
 
 Since the right child node cover is smaller than 1, the split is not allowed.
@@ -312,19 +347,40 @@ Let's see the report of all the possible splits of the second tree.
 
 
 ```
-## "cap-shape=bell" is used to make the split. The gain is 4.803007. The node cover is 1189.181. The left child node cover is 1147.435. The right child node cover is 41.7459. The left leaf score is -0.004664058. The right leaf score is -0.3460597. The left leaf success probability is 0.498834. The right leaf success probability is 0.4143383.
+## "cap-shape=bell" is used to make the split. The gain is 4.803007.
+## The node cover is 1189.181.
+## The left child node cover is 1147.435.
+## The right child node cover is 41.7459.
+## The left leaf score is -0.004664058.
+## The right leaf score is -0.3460597.
+## The left leaf success probability is 0.498834.
+## The right leaf success probability is 0.4143383.
 ```
 
 
 ```
-## "cap-shape=conical" is used to make the split. The gain is 1.043546. The node cover is 1189.181. The left child node cover is 1188.705. The right child node cover is 0.4767152. The left leaf score is -0.01795807. The right leaf score is 0.8233136. The left leaf success probability is 0.4955106. The right leaf success probability is 0.6949393.
+## "cap-shape=conical" is used to make the split. The gain is 1.043546.
+## The node cover is 1189.181.
+## The left child node cover is 1188.705.
+## The right child node cover is 0.4767152.
+## The left leaf score is -0.01795807.
+## The right leaf score is 0.8233136.
+## The left leaf success probability is 0.4955106.
+## The right leaf success probability is 0.6949393.
 ```
 
 Since the right child node cover is smaller than 1, the split is not allowed.
 
 
 ```
-## "cap-shape=convex" is used to make the split. The gain is 0.2991243. The node cover is 1189.181. The left child node cover is 565.8943. The right child node cover is 623.287. The left leaf score is -0.03355256. The right leaf score is -0.001807261. The left leaf success probability is 0.4916126. The right leaf success probability is 0.4995482.
+## "cap-shape=convex" is used to make the split. The gain is 0.2991243.
+## The node cover is 1189.181.
+## The left child node cover is 565.8943.
+## The right child node cover is 623.287.
+## The left leaf score is -0.03355256.
+## The right leaf score is -0.001807261.
+## The left leaf success probability is 0.4916126.
+## The right leaf success probability is 0.4995482.
 ```
 
 Since "cap-shape=bell" gives the largest gain among all the allowed splits. We will use it to make the initial split of our second tree.
@@ -333,14 +389,28 @@ Let's see the report for all possible splits for "cap-shape=bell" = 0.
 
 
 ```
-## "cap-shape=conical" is used to make the split. The gain is 1.013628. The node cover is 1147.435. The left child node cover is 1146.959. The right child node cover is 0.4767152. The left leaf score is -0.005725092. The right leaf score is 0.8233136. The left leaf success probability is 0.4985687. The right leaf success probability is 0.6949393.
+## "cap-shape=conical" is used to make the split. The gain is 1.013628.
+## The node cover is 1147.435.
+## The left child node cover is 1146.959.
+## The right child node cover is 0.4767152.
+## The left leaf score is -0.005725092.
+## The right leaf score is 0.8233136.
+## The left leaf success probability is 0.4985687.
+## The right leaf success probability is 0.6949393.
 ```
 
 Since the right child node cover is smaller than 1, the split is not allowed.
 
 
 ```
-## "cap-shape=convex" is used to make the split. The gain is 0.01109842. The node cover is 1147.435. The left child node cover is 524.1484. The right child node cover is 623.287. The left leaf score is -0.008051286. The right leaf score is -0.001807261. The left leaf success probability is 0.4979872. The right leaf success probability is 0.4995482.
+## "cap-shape=convex" is used to make the split. The gain is 0.01109842.
+## The node cover is 1147.435.
+## The left child node cover is 524.1484.
+## The right child node cover is 623.287.
+## The left leaf score is -0.008051286.
+## The right leaf score is -0.001807261.
+## The left leaf success probability is 0.4979872.
+## The right leaf success probability is 0.4995482.
 ```
 
 We will use this only allowed split.
@@ -349,7 +419,14 @@ Let's see the report for all possible split for "cap-shape=bell" = 0 and "cap-sh
 
 
 ```
-## "cap-shape=conical" is used to make the split. The gain is 1.023428. The node cover is 524.1484. The left child node cover is 523.6717. The right child node cover is 0.4767152. The left leaf score is -0.01037586. The right leaf score is 0.8233136. The left leaf success probability is 0.4974061. The right leaf success probability is 0.6949393.
+## "cap-shape=conical" is used to make the split. The gain is 1.023428.
+## The node cover is 524.1484.
+## The left child node cover is 523.6717.
+## The right child node cover is 0.4767152.
+## The left leaf score is -0.01037586.
+## The right leaf score is 0.8233136.
+## The left leaf success probability is 0.4974061.
+## The right leaf success probability is 0.6949393.
 ```
 
 Since the right child node cover is smaller than 1, the split is not allowed.
