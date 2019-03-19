@@ -16,22 +16,11 @@ output:
 
 This is an R Markdown d
 
-1 = ${O(d_{\max})}$
+1 = $w_{ki}$
 
-2 = ${O(d\\_{\max})}$
+2 = $w\\_{ki}$
 
-3 = ${O(d_{\\max})}$
-
-
+3 = $w_{ki}$
 
 
-$$\begin{eqnarray} 
-y &=& 1+1   \\\\\\
-&=& 2
-\end{eqnarray}$$
 
-
-$$\begin{eqnarray} 
-y &=& 1+1   \\
-&=& 2
-\end{eqnarray}$$
