@@ -79,7 +79,7 @@ obj(\widehat{W^{(t)}})
 \end{aligned}
 $$
 
-Before we define the tree complexity measure. Let me introduce another representation of $W\_i^{(t)}$, the leaf score of observation $i$ in tree $f\_{(t)}$. Assume tree $f\_{k}$ has $L$ leaves and $V^{k}$ is a vector of length $L$ representing the leaf score of the tree. Each leaf node $l$ has leaf score $V\_l^{k}$. Let's also assume function $q(i)$ maps the observation $i$ to leaf $l\epsilon\{1,2,...,L\}$ of the tree. Then we can write $W\_i^{(t)}$ as $V\_{q(i)}^{(t)}$.
+Before we define the tree complexity measure. Let me introduce another representation of $W\_i^{(t)}$, the leaf score of observation $i$ in tree $f\_{(t)}$. Assume tree $f\_{k}$ has $L$ leaves and $V^{k}$ is a vector of length $L$ representing the leaf score of the tree. Each leaf node $l$ has leaf score $V\_l^{k}$. Let's also assume function $q(i)$ maps the observation $i$ to leaf $l\;\epsilon\;\{1,2,...,L\}$ of the tree. Then we can write $W\_i^{(t)}$ as $V\_{q(i)}^{(t)}$.
 
 The complexity measure of a tree $f\_k$ is defined as $\pi(f\_k)=\gamma L+\frac{1}{2}\lambda\sum\_lV\_l^2$. $\gamma$ (gamma) and $\lambda$ (lambda) are tuning parameters. It takes both the number of leaves and the leaf score in to account. Notice the sum of squares in the second part is not the L2 norm of $W$, but the L2 norm of $V$ instead.
 
@@ -98,7 +98,7 @@ $$
 
 $\widehat{V\_l^{(t)}}$ is the leaf score vector of the estimated tree $\widehat{f\_{(t)}}$. $L\_{(t)}$ is the number of leaves in the estimated tree. $I\_l$ is the collection of index of observations who are mapped to leaf $l$ of the estimated tree.
 
-Since $\widehat{V\_l^{(t)}}$ are independent to each other for different value of $l$ and the objective function is a convex quadratic function of $\widehat{V\_l^{(t)}}$, the maximum $-\frac{1}{2}\sum\_l\frac{(\sum\_{i\in I\_l}\widehat{p\_i^{(t-1)}}-y\_i)^2}{\sum\_{i\in I\_l}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\lambda}+\gamma L\_{(t)}$ is attained at $\widehat{V\_l^{(t)}}=-\frac{\sum\_{i\in I\_l}\widehat{p\_i^{(t-1)}}-y\_i}{\sum\_{i\in I\_l}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\lambda}$
+Since $\widehat{V\_l^{(t)}}$ are independent to each other for different value of $l$ and the objective function is a convex quadratic function of $\widehat{V\_l^{(t)}}$, the maximum $-\frac{1}{2}\sum\_l\frac{(\sum\_{i\in I\_l}\widehat{p\_i^{(t-1)}}-y\_i)^2}{\sum\_{i\in I\_l}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\lambda}+\gamma L\_{(t)}$ is attained at $\widehat{V\_l^{(t)}}=-\frac{\sum\_{i\in I\_l}\widehat{p\_i^{(t-1)}}-y\_i}{\sum\_{i\in I\_l}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\lambda}$.
 
 At this point, we know how to calculate the best leaf score if we know the mapping from observations to leaves in each estimated tree. But how do we construct each tree? Imaging if we split a leaf $l$ into left leaf $l\_L$ and right leaf $l\_R$. Then the reduce (Gain) in the objective function is:
 
@@ -119,8 +119,26 @@ Split is allowed only when we have a positive gain.
 The data set I used is the agaricus data set in xgboost library. To make everything simpler, I only used the first 2000 observations with the response variable = 1 and the first 3000 observations with the response variable = 0. Also, only the first three predictors (cap-shape=bell, cap-shape=conical and cap-shape=convex) are used in the model.
 
 
+```r
+library(xgboost)
+data(agaricus.train, package='xgboost')
+data(agaricus.test, package='xgboost')
+
+train_ind=c(which(agaricus.train$label=="1")[1:2000],which(agaricus.train$label=="0")[1:3000])
+train_X = agaricus.train$data[train_ind,1:3]
+train_y = agaricus.train$label[train_ind]
+train_data = xgb.DMatrix(train_X, label = train_y, missing = NA)
+train_X@Dimnames[[2]]
+```
+
 ```
 ## [1] "cap-shape=bell"    "cap-shape=conical" "cap-shape=convex"
+```
+
+```r
+test_X = agaricus.test$data[1:10,1:3]
+test_y = agaricus.test$label[1:10]
+xgb.test.data = xgb.DMatrix(test_X, label = test_y, missing = NA)
 ```
 
 The following parameters are used:
@@ -166,8 +184,8 @@ bst = xgboost(data = train_data,
 xgb.plot.tree(model=bst)
 ```
 
-<!--html_preserve--><div id="htmlwidget-5287f29f85c27adbc798" style="width:672px;height:480px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-5287f29f85c27adbc798">{"x":{"diagram":"digraph {\n\ngraph [layout = \"dot\",\n       rankdir = \"LR\"]\n\nnode [color = \"DimGray\",\n      style = \"filled\",\n      fontname = \"Helvetica\"]\n\nedge [color = \"DimGray\",\n     arrowsize = \"1.5\",\n     arrowhead = \"vee\",\n     fontname = \"Helvetica\"]\n\n  \"1\" [label = \"Tree 1\ncap-shape=bell\nCover: 1189.18127\nGain: 4.80300188\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"2\" [label = \"cap-shape=convex\nCover: 1147.43542\nGain: 0.0110983625\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"3\" [label = \"Leaf\nCover: 41.745903\nValue: -0.346059561\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"4\" [label = \"Leaf\nCover: 524.148438\nValue: -0.00805134326\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"5\" [label = \"Leaf\nCover: 623.286987\nValue: -0.00180733623\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"6\" [label = \"Tree 0\ncap-shape=bell\nCover: 1250\nGain: 75.0913696\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"7\" [label = \"cap-shape=convex\nCover: 1183.25\nGain: 9.77643013\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"8\" [label = \"Leaf\nCover: 66.75\nValue: -1.4243542\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"9\" [label = \"Leaf\nCover: 549.75\nValue: -0.438492954\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"10\" [label = \"Leaf\nCover: 633.5\nValue: -0.255319148\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n\"1\"->\"2\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"2\"->\"4\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"6\"->\"7\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"7\"->\"9\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"1\"->\"3\" [style = \"bold\", style = \"solid\"] \n\"2\"->\"5\" [style = \"solid\", style = \"solid\"] \n\"6\"->\"8\" [style = \"solid\", style = \"solid\"] \n\"7\"->\"10\" [style = \"solid\", style = \"solid\"] \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><!--/html_preserve-->
+<!--html_preserve--><div id="htmlwidget-e0c8e4976e83b49f395a" style="width:672px;height:480px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-e0c8e4976e83b49f395a">{"x":{"diagram":"digraph {\n\ngraph [layout = \"dot\",\n       rankdir = \"LR\"]\n\nnode [color = \"DimGray\",\n      style = \"filled\",\n      fontname = \"Helvetica\"]\n\nedge [color = \"DimGray\",\n     arrowsize = \"1.5\",\n     arrowhead = \"vee\",\n     fontname = \"Helvetica\"]\n\n  \"1\" [label = \"Tree 1\ncap-shape=bell\nCover: 1189.18127\nGain: 4.80300188\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"2\" [label = \"cap-shape=convex\nCover: 1147.43542\nGain: 0.0110983625\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"3\" [label = \"Leaf\nCover: 41.745903\nValue: -0.346059561\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"4\" [label = \"Leaf\nCover: 524.148438\nValue: -0.00805134326\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"5\" [label = \"Leaf\nCover: 623.286987\nValue: -0.00180733623\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"6\" [label = \"Tree 0\ncap-shape=bell\nCover: 1250\nGain: 75.0913696\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"7\" [label = \"cap-shape=convex\nCover: 1183.25\nGain: 9.77643013\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"8\" [label = \"Leaf\nCover: 66.75\nValue: -1.4243542\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"9\" [label = \"Leaf\nCover: 549.75\nValue: -0.438492954\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"10\" [label = \"Leaf\nCover: 633.5\nValue: -0.255319148\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n\"1\"->\"2\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"2\"->\"4\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"6\"->\"7\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"7\"->\"9\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"1\"->\"3\" [style = \"bold\", style = \"solid\"] \n\"2\"->\"5\" [style = \"solid\", style = \"solid\"] \n\"6\"->\"8\" [style = \"solid\", style = \"solid\"] \n\"7\"->\"10\" [style = \"solid\", style = \"solid\"] \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><!--/html_preserve-->
 
 The Gain is same as our Gain formula but without $\frac{1}{2}$.
 
@@ -207,26 +225,33 @@ pR_new = 1/(1+exp(-WR))
 
 cat('"cap-shape=bell" is used to make the split. The gain is ',
     gain,
-    ". The node cover is ",
+    ".\nThe node cover is ",
     H,
-    ". The left child node cover is ",
+    ".\nThe left child node cover is ",
     HL,
-    ". The right child node cover is ",
+    ".\nThe right child node cover is ",
     HR,
-    ". The left leaf score is ",
+    ".\nThe left leaf score is ",
     WL,
-    ". The right leaf score is ",
+    ".\nThe right leaf score is ",
     WR,
-    ". The left leaf success probability is ",
+    ".\nThe left leaf success probability is ",
     pL_new,
-    ". The right leaf success probability is ",
+    ".\nThe right leaf success probability is ",
     pR_new,
     ".",
     sep = "")
 ```
 
 ```
-## "cap-shape=bell" is used to make the split. The gain is 75.09137. The node cover is 1250. The left child node cover is 1183.25. The right child node cover is 66.75. The left leaf score is -0.340722. The right leaf score is -1.424354. The left leaf success probability is 0.4156341. The right leaf success probability is 0.1939799.
+## "cap-shape=bell" is used to make the split. The gain is 75.09137.
+## The node cover is 1250.
+## The left child node cover is 1183.25.
+## The right child node cover is 66.75.
+## The left leaf score is -0.340722.
+## The right leaf score is -1.424354.
+## The left leaf success probability is 0.4156341.
+## The right leaf success probability is 0.1939799.
 ```
 
 Let's check out the report of other possible splits.
