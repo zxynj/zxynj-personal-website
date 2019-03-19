@@ -16,4 +16,4 @@ In this post, I will explain xgoost algorithm and manually solve a simple binary
 
 # Xgboost Algorithm for binary classification
 
-In generalized linear regression (GLM), we have $g(E[Y])=X\beta$ where the right hand side is the linear combination of predictors. In xgboost, it puts predictors into multiple trees (rounds) to come up with leaf score (weight) $w_{ki}$ for each tree
+In generalized linear regression (GLM), we have $g(E[Y])=X\beta$ where the right hand side is the linear combination of predictors. In xgboost, it puts predictors into multiple trees (rounds) to come up with leaf score (weight) $w_{ki}$ for each tree $k$ and observation $i$.
