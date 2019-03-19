@@ -16,11 +16,9 @@ output:
 
 This is an R Markdown d
 
-1 = $w_{ki}$
+1 = observation $i$. $w_{ki}$ is 
 
-2 = $w\\_{ki}$
-
-3 = $w_{ki}$
+2 = observation $i$. $w\\_{ki}$ is 
 
 
 
