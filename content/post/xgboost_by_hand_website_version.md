@@ -19,7 +19,7 @@ In this post, I will explain xgoost algorithm and manually solve a simple binary
 In generalized linear regression (GLM), we have $g(E[Y])=X\beta$ where the right hand side is the linear combination of predictors. In xgboost, it puts predictors into multiple trees (rounds) to come up with leaf score (weight) $w\_{ki}$ for each tree $k$ and observation $i$. $w\_{ki}$ is summed over all trees so that $w\_{\cdot{i}}$ is the final leaf score for observation $i$. The vector $W$ formed by these $W\_i=w\_{\cdot{i}}$ is what appears on the right hand side of $g(E[Y])=X\beta$ instead of $X\beta$. In GLM, the common link function for a response variable following a bernoulli distribution is the logit canonical link. Xgboost also uses the logit link when specifying the "binary:logistic" objective. In GLM, we maximize the log likelihood of the estimator $\widehat{\beta}$ to find the desired $\widehat{\beta}$. In xgboost, the log likelihood of $\widehat{W}$ is maximized which is equivalent to minimizing the loss function $LOSS(\widehat{W})=-l(\widehat{W})$.
 
 $$
-\normalsize
+\small
 \begin{aligned}
 \underset{\widehat{W}}{\operatorname{argmax}}\;l(\widehat{W})
 &=\ln(\prod\_i(\frac{1}{1+e^{-\widehat{W\_i}}})^{y\_i}(1-\frac{1}{1+e^{-\widehat{W\_i}}})^{1-y\_i})\\\\\\
@@ -49,18 +49,15 @@ $$
 Let's derive the first (gradient) and second (hessian) order derivative of the loss function for the binary classification problem.
 
 $$
+\small
 \begin{aligned}
 \frac{\partial LOSS(\widehat{W^{(t)}})}{\partial \widehat{W\_i^{(t)}}}
 &=\frac{\partial y\_i\ln(1+e^{-\widehat{W\_i^{(t)}}})+(1-y\_i)\ln(1+e^{\widehat{W\_i^{(t)}}})}{\partial \widehat{W\_i^{(t)}}}\\\\\\
 &=\frac{-y\_i+(1-y\_i)e^{\widehat{W\_i^{(t)}}}}{1+e^{\widehat{W\_i^{(t)}}}}\\\\\\
 &=\frac{-(y\_ie^{-\widehat{W\_i^{(t)}}}+y\_i)+1}{e^{-\widehat{W\_i^{(t)}}}+1}\\\\\\
 &=\frac{1}{1+e^{-\widehat{W\_i^{(t)}}}}-y\_i\\\\\\
-&=\widehat{p\_i^{(t)}}-y\_i
-\end{aligned}
-$$
-
-$$
-\begin{aligned}
+&=\widehat{p\_i^{(t)}}-y\_i\\\\\\
+\\\\\\
 \frac{\partial^2LOSS(\widehat{W^{(t)}})}{\partial\widehat{W\_i^{(t)}}^2}
 &=-(1+e^{-\widehat{W\_i^{(t)}}})^{-2}(-e^{-\widehat{W\_i^{(t)}}})\\\\\\
 &=\frac{1}{1+e^{-\widehat{W\_i^{(t)}}}}\cdot\frac{e^{-\widehat{W\_i^{(t)}}}}{1+e^{-\widehat{W\_i^{(t)}}}}\\\\\\
@@ -72,10 +69,13 @@ $$
 $\widehat{p\_i^{(t)}}$ is the predicted success probability after adding tree $f\_{(t)}$. Plug the gradient and the hessian into the objective function we get:
 
 $$
+\small
 \begin{aligned}
 obj(\widehat{W^{(t)}})
-&=\sum\_i\frac{\partial LOSS(\widehat{W^{(t-1)}})}{\partial \widehat{W\_i^{(t-1)}}}\widehat{f\_{(t)}(x\_i)}+\frac{1}{2}\sum\_i\frac{\partial^2LOSS(\widehat{W^{(t-1)}})}{\partial\widehat{W\_i^{(t-1)}}^2}{\widehat{f\_{(t)}(x\_i)}}^2+\pi(\widehat{f\_{(t)}})+constant\\\\\\
-&=\sum\_i(\widehat{p\_i^{(t-1)}}-y\_i)\cdot \widehat{f\_{(t)}(x\_i)}+\frac{1}{2}\sum\_i\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})\cdot {\widehat{f\_{(t)}(x\_i)}}^2+\pi(\widehat{f\_{(t)}})+constant
+&=\sum\_i\frac{\partial LOSS(\widehat{W^{(t-1)}})}{\partial \widehat{W\_i^{(t-1)}}}\widehat{f\_{(t)}(x\_i)}+\frac{1}{2}\sum\_i\frac{\partial^2LOSS(\widehat{W^{(t-1)}})}{\partial\widehat{W\_i^{(t-1)}}^2}{\widehat{f\_{(t)}(x\_i)}}^2\\\\\\
+&\quad+\pi(\widehat{f\_{(t)}})+constant\\\\\\
+&=\sum\_i(\widehat{p\_i^{(t-1)}}-y\_i)\cdot \widehat{f\_{(t)}(x\_i)}+\frac{1}{2}\sum\_i\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})\cdot {\widehat{f\_{(t)}(x\_i)}}^2\\\\\\
+&\quad+\pi(\widehat{f\_{(t)}})+constant
 \end{aligned}
 $$
 
@@ -86,10 +86,13 @@ The complexity measure of a tree $f\_k$ is defined as $\pi(f\_k)=\gamma L+\frac{
 Finally, we put it all together:
 
 $$
+\small
 \begin{aligned}
 obj(\widehat{V^{(t)}})
-&=\sum\_i(\widehat{p\_i^{(t-1)}}-y\_i)\cdot \widehat{f\_{(t)}(x\_i)}+\frac{1}{2}\sum\_i\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})\cdot {\widehat{f\_{(t)}(x\_i)}}^2+\gamma L\_{(t)}+\frac{1}{2}\lambda\sum\_l{\widehat{V\_l^{(t)}}}^2+constant\\\\\\
-&=\sum\_l[(\sum\_{i\in I\_l}\widehat{p\_i^{(t-1)}}-y\_i)\cdot \widehat{V\_l^{(t)}}+\frac{1}{2}(\sum\_{i\in I\_l}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\lambda)\cdot{\widehat{V\_l^{(t)}}}^2]+\gamma L\_{(t)}+constant
+&=\sum\_i(\widehat{p\_i^{(t-1)}}-y\_i)\cdot \widehat{f\_{(t)}(x\_i)}+\frac{1}{2}\sum\_i\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})\cdot {\widehat{f\_{(t)}(x\_i)}}^2\\\\\\
+&\quad+\gamma L\_{(t)}+\frac{1}{2}\lambda\sum\_l{\widehat{V\_l^{(t)}}}^2+constant\\\\\\
+&=\sum\_l[(\sum\_{i\in I\_l}\widehat{p\_i^{(t-1)}}-y\_i)\cdot \widehat{V\_l^{(t)}}+\frac{1}{2}(\sum\_{i\in I\_l}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\lambda)\cdot{\widehat{V\_l^{(t)}}}^2]\\\\\\
+&\quad+\gamma L\_{(t)}+constant
 \end{aligned}
 $$
 
@@ -100,9 +103,12 @@ Since $\widehat{V\_l^{(t)}}$ are independent to each other for different value o
 At this point, we know how to calculate the best leaf score if we know the mapping from observations to leaves in each estimated tree. But how do we construct each tree? Imaging if we split a leaf $l$ into left leaf $l\_L$ and right leaf $l\_R$. Then the reduce (Gain) in the objective function is:
 
 $$
+\small
 \begin{aligned}
-Gain&=-\frac{1}{2}\frac{\sum\_{i\in I\_l}\widehat{p\_i^{(t-1)}}-y\_i}{\sum\_{i\in I\_l}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\lambda}+\gamma L\_{(t)}-(-\frac{1}{2}\frac{\sum\_{i\in{I\_{l\_L}}}\widehat{p\_i^{(t-1)}}-y\_i}{\sum\_{i\in {I\_{l\_L}}}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\lambda}-\frac{1}{2}\frac{\sum\_{i\in{I\_{l\_R}}}\widehat{p\_i^{(t-1)}}-y\_i}{\sum\_{i\in {I\_{l\_R}}}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\lambda}+\gamma (L\_{(t)}+1))\\\\\\
-&=\frac{1}{2}[\frac{\sum\_{i\in{I\_{l\_L}}}\widehat{p\_i^{(t-1)}}-y\_i}{\sum\_{i\in {I\_{l\_L}}}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\lambda}+\frac{\sum\_{i\in{I\_{l\_R}}}\widehat{p\_i^{(t-1)}}-y\_i}{\sum\_{i\in {I\_{l\_R}}}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\lambda}-\frac{\sum\_{i\in {I\_{l\_L}}}\widehat{p\_i^{(t-1)}}-y\_i+\sum\_{i\in {I\_{l\_R}}}\widehat{p\_i^{(t-1)}}-y\_i}{\sum\_{i\in I\_{l\_L}}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\sum\_{i\in I\_{l\_R}}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\lambda}]-\gamma
+Gain&=-\frac{1}{2}\frac{\sum\_{i\in I\_l}\widehat{p\_i^{(t-1)}}-y\_i}{\sum\_{i\in I\_l}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\lambda}+\gamma L\_{(t)}\\\\\\
+&\quad-(-\frac{1}{2}\frac{\sum\_{i\in{I\_{l\_L}}}\widehat{p\_i^{(t-1)}}-y\_i}{\sum\_{i\in {I\_{l\_L}}}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\lambda}-\frac{1}{2}\frac{\sum\_{i\in{I\_{l\_R}}}\widehat{p\_i^{(t-1)}}-y\_i}{\sum\_{i\in {I\_{l\_R}}}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\lambda}+\gamma (L\_{(t)}+1))\\\\\\
+&=\frac{1}{2}[\frac{\sum\_{i\in{I\_{l\_L}}}\widehat{p\_i^{(t-1)}}-y\_i}{\sum\_{i\in {I\_{l\_L}}}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\lambda}+\frac{\sum\_{i\in{I\_{l\_R}}}\widehat{p\_i^{(t-1)}}-y\_i}{\sum\_{i\in {I\_{l\_R}}}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\lambda}\\\\\\
+&\quad-\frac{\sum\_{i\in {I\_{l\_L}}}\widehat{p\_i^{(t-1)}}-y\_i+\sum\_{i\in {I\_{l\_R}}}\widehat{p\_i^{(t-1)}}-y\_i}{\sum\_{i\in I\_{l\_L}}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\sum\_{i\in I\_{l\_R}}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\lambda}]-\gamma
 \end{aligned}
 $$
 
@@ -160,8 +166,8 @@ bst = xgboost(data = train_data,
 xgb.plot.tree(model=bst)
 ```
 
-<!--html_preserve--><div id="htmlwidget-b170e94b60e082b0d15f" style="width:672px;height:480px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-b170e94b60e082b0d15f">{"x":{"diagram":"digraph {\n\ngraph [layout = \"dot\",\n       rankdir = \"LR\"]\n\nnode [color = \"DimGray\",\n      style = \"filled\",\n      fontname = \"Helvetica\"]\n\nedge [color = \"DimGray\",\n     arrowsize = \"1.5\",\n     arrowhead = \"vee\",\n     fontname = \"Helvetica\"]\n\n  \"1\" [label = \"Tree 1\ncap-shape=bell\nCover: 1189.18127\nGain: 4.80300188\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"2\" [label = \"cap-shape=convex\nCover: 1147.43542\nGain: 0.0110983625\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"3\" [label = \"Leaf\nCover: 41.745903\nValue: -0.346059561\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"4\" [label = \"Leaf\nCover: 524.148438\nValue: -0.00805134326\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"5\" [label = \"Leaf\nCover: 623.286987\nValue: -0.00180733623\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"6\" [label = \"Tree 0\ncap-shape=bell\nCover: 1250\nGain: 75.0913696\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"7\" [label = \"cap-shape=convex\nCover: 1183.25\nGain: 9.77643013\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"8\" [label = \"Leaf\nCover: 66.75\nValue: -1.4243542\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"9\" [label = \"Leaf\nCover: 549.75\nValue: -0.438492954\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"10\" [label = \"Leaf\nCover: 633.5\nValue: -0.255319148\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n\"1\"->\"2\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"2\"->\"4\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"6\"->\"7\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"7\"->\"9\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"1\"->\"3\" [style = \"bold\", style = \"solid\"] \n\"2\"->\"5\" [style = \"solid\", style = \"solid\"] \n\"6\"->\"8\" [style = \"solid\", style = \"solid\"] \n\"7\"->\"10\" [style = \"solid\", style = \"solid\"] \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><!--/html_preserve-->
+<!--html_preserve--><div id="htmlwidget-5287f29f85c27adbc798" style="width:672px;height:480px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-5287f29f85c27adbc798">{"x":{"diagram":"digraph {\n\ngraph [layout = \"dot\",\n       rankdir = \"LR\"]\n\nnode [color = \"DimGray\",\n      style = \"filled\",\n      fontname = \"Helvetica\"]\n\nedge [color = \"DimGray\",\n     arrowsize = \"1.5\",\n     arrowhead = \"vee\",\n     fontname = \"Helvetica\"]\n\n  \"1\" [label = \"Tree 1\ncap-shape=bell\nCover: 1189.18127\nGain: 4.80300188\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"2\" [label = \"cap-shape=convex\nCover: 1147.43542\nGain: 0.0110983625\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"3\" [label = \"Leaf\nCover: 41.745903\nValue: -0.346059561\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"4\" [label = \"Leaf\nCover: 524.148438\nValue: -0.00805134326\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"5\" [label = \"Leaf\nCover: 623.286987\nValue: -0.00180733623\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"6\" [label = \"Tree 0\ncap-shape=bell\nCover: 1250\nGain: 75.0913696\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"7\" [label = \"cap-shape=convex\nCover: 1183.25\nGain: 9.77643013\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"8\" [label = \"Leaf\nCover: 66.75\nValue: -1.4243542\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"9\" [label = \"Leaf\nCover: 549.75\nValue: -0.438492954\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"10\" [label = \"Leaf\nCover: 633.5\nValue: -0.255319148\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n\"1\"->\"2\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"2\"->\"4\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"6\"->\"7\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"7\"->\"9\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"1\"->\"3\" [style = \"bold\", style = \"solid\"] \n\"2\"->\"5\" [style = \"solid\", style = \"solid\"] \n\"6\"->\"8\" [style = \"solid\", style = \"solid\"] \n\"7\"->\"10\" [style = \"solid\", style = \"solid\"] \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><!--/html_preserve-->
 
 The Gain is same as our Gain formula but without $\frac{1}{2}$.
 
