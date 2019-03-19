@@ -16,9 +16,9 @@ output:
 
 This is an R Markdown d
 
-1 = observation $i$. $w_{ki}$ is 
+1 = eaf score (weight) $w_{ki}$ for each tr
 
-2 = observation $i$. $w\\_{ki}$ is 
+2 = oeaf score (weight) $w\\_{ki}$ for each tr
 
 
 
