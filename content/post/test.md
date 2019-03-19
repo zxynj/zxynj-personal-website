@@ -16,9 +16,14 @@ output:
 
 This is an R Markdown d
 
-abstract = "${O(d_{\max})}$"
+1 = ${O(d_{\max})}$
 
-abstract = "${O(d\\_{\\max})}$"
+2 = ${O(d\\_{\max})}$
+
+3 = ${O(d_{\\max})}$
+
+
+
 
 $$\begin{eqnarray} 
 y &=& 1+1   \\\\\\

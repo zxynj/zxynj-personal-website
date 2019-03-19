@@ -5,14 +5,13 @@ date: "March 18, 2019"
 output:
   html_document:
     keep_md: true
-    df_print: paged
 ---
 
 
 
 In this post, I will explain xgoost algorithm and manually solve a simple binary classification problem using the algorithm.
 
-## Xgboost Algorithm for binary classification
+# Xgboost Algorithm for binary classification
 
 In generalized linear regression (GLM), we have $g(E[Y])=X\beta$ where the right hand side is the linear combination of predictors. In xgboost, it puts predictors into multiple trees (rounds) to come up with leaf score (weight) $w_{ki}$ for each tree $k$ and observation $i$. $w_{ki}$ is summed over all trees so that $w_{\cdot{i}}$ is the final leaf score for observation $i$. The vector $W$ formed by these $W_i=w_{\cdot{i}}$ is what appears on the right hand side of $g(E[Y])=X\beta$ instead of $X\beta$. In GLM, the common link function for a response variable following a bernoulli distribution is the logit canonical link. Xgboost also uses the logit link when specifying the "binary:logistic" objective. In GLM, we maximize the log likelihood of the estimator $\widehat{\beta}$ to find the desired $\widehat{\beta}$. In xgboost, the log likelihood of $\widehat{W}$ is maximized which is equivalent to minimizing the loss function $LOSS(\widehat{W})=-l(\widehat{W})$.
 
@@ -20,8 +19,8 @@ $$
 \begin{aligned}
 \underset{\widehat{W}}{\operatorname{argmax}}\;l(\widehat{W})
 &=\ln(\prod_i(\frac{1}{1+e^{-\widehat{W_i}}})^{y_i}(1-\frac{1}{1+e^{-\widehat{W_i}}})^{1-y_i})
-=\ln(\prod_i(\frac{1}{1+e^{-\widehat{W_i}}})^{y_i}(\frac{1}{1+e^{\widehat{W_i}}})^{1-y_i})\\
-&=-\sum_iy_i\ln(1+e^{-\widehat{W_i}})-\sum_i(1-y_i)\ln(1+e^{\widehat{W_i}})\\
+=\ln(\prod_i(\frac{1}{1+e^{-\widehat{W_i}}})^{y_i}(\frac{1}{1+e^{\widehat{W_i}}})^{1-y_i})\\\\\\
+&=-\sum_iy_i\ln(1+e^{-\widehat{W_i}})-\sum_i(1-y_i)\ln(1+e^{\widehat{W_i}})\\\\\\
 \underset{\widehat{W}}{\operatorname{argmin}}\;LOSS(\widehat{W})
 &=-l(\widehat{W})
 =\sum_iy_i\ln(1+e^{-\widehat{W_i}})+(1-y_i)\ln(1+e^{\widehat{W_i}})
@@ -35,7 +34,7 @@ In order to add tree $\widehat{f_{(t)}}$ to the existing tree collection ${\wide
 $$
 \begin{aligned}
 obj(\widehat{W^{(t)}})
-&=LOSS(\widehat{W^{(t-1)}})+\sum_i\frac{\partial LOSS(\widehat{W^{(t-1)}})}{\partial\widehat{W_i^{(t-1)}}}\widehat{f_{(t)}(x_i)}+\frac{1}{2}\sum_i\frac{\partial^2 LOSS(\widehat{W^{(t-1)}})}{\partial\widehat{W_i^{(t-1)}}^2}{\widehat{f_{(t)}(x_i)}}^2+\pi(\widehat{f_{(t)}})+constant\\
+&=LOSS(\widehat{W^{(t-1)}})+\sum_i\frac{\partial LOSS(\widehat{W^{(t-1)}})}{\partial\widehat{W_i^{(t-1)}}}\widehat{f_{(t)}(x_i)}+\frac{1}{2}\sum_i\frac{\partial^2 LOSS(\widehat{W^{(t-1)}})}{\partial\widehat{W_i^{(t-1)}}^2}{\widehat{f_{(t)}(x_i)}}^2+\pi(\widehat{f_{(t)}})+constant\\\\\\
 &=\sum_i\frac{\partial LOSS(\widehat{W^{(t-1)}})}{\partial \widehat{W_i^{(t-1)}}}\widehat{f_{(t)}(x_i)}+\frac{1}{2}\sum_i\frac{\partial^2LOSS(\widehat{W^{(t-1)}})}{\partial\widehat{W_i^{(t-1)}}^2}{\widehat{f_{(t)}(x_i)}}^2+\pi(\widehat{f_{(t)}})+constant
 \end{aligned}
 $$
@@ -45,10 +44,10 @@ Let's derive the first (gradient) and second (hessian) order derivative of the l
 $$
 \begin{aligned}
 \frac{\partial LOSS(\widehat{W^{(t)}})}{\partial \widehat{W_i^{(t)}}}
-&=\frac{\partial y_i\ln(1+e^{-\widehat{W_i^{(t)}}})+(1-y_i)\ln(1+e^{\widehat{W_i^{(t)}}})}{\partial \widehat{W_i^{(t)}}}\\
-&=\frac{-y_i+(1-y_i)e^{\widehat{W_i^{(t)}}}}{1+e^{\widehat{W_i^{(t)}}}}\\
-&=\frac{-(y_ie^{-\widehat{W_i^{(t)}}}+y_i)+1}{e^{-\widehat{W_i^{(t)}}}+1}\\
-&=\frac{1}{1+e^{-\widehat{W_i^{(t)}}}}-y_i\\
+&=\frac{\partial y_i\ln(1+e^{-\widehat{W_i^{(t)}}})+(1-y_i)\ln(1+e^{\widehat{W_i^{(t)}}})}{\partial \widehat{W_i^{(t)}}}\\\\\\
+&=\frac{-y_i+(1-y_i)e^{\widehat{W_i^{(t)}}}}{1+e^{\widehat{W_i^{(t)}}}}\\\\\\
+&=\frac{-(y_ie^{-\widehat{W_i^{(t)}}}+y_i)+1}{e^{-\widehat{W_i^{(t)}}}+1}\\\\\\
+&=\frac{1}{1+e^{-\widehat{W_i^{(t)}}}}-y_i\\\\\\
 &=\widehat{p_i^{(t)}}-y_i
 \end{aligned}
 $$
@@ -56,9 +55,9 @@ $$
 $$
 \begin{aligned}
 \frac{\partial^2LOSS(\widehat{W^{(t)}})}{\partial\widehat{W_i^{(t)}}^2}
-&=-(1+e^{-\widehat{W_i^{(t)}}})^{-2}(-e^{-\widehat{W_i^{(t)}}})\\
-&=\frac{1}{1+e^{-\widehat{W_i^{(t)}}}}\cdot\frac{e^{-\widehat{W_i^{(t)}}}}{1+e^{-\widehat{W_i^{(t)}}}}\\
-&=\frac{1}{1+e^{-\widehat{W_i^{(t)}}}}\cdot(1-\frac{1}{1+e^{-\widehat{W_i^{(t)}}}})\\
+&=-(1+e^{-\widehat{W_i^{(t)}}})^{-2}(-e^{-\widehat{W_i^{(t)}}})\\\\\\
+&=\frac{1}{1+e^{-\widehat{W_i^{(t)}}}}\cdot\frac{e^{-\widehat{W_i^{(t)}}}}{1+e^{-\widehat{W_i^{(t)}}}}\\\\\\
+&=\frac{1}{1+e^{-\widehat{W_i^{(t)}}}}\cdot(1-\frac{1}{1+e^{-\widehat{W_i^{(t)}}}})\\\\\\
 &=\widehat{p_i^{(t)}}\cdot(1-\widehat{p_i^{(t)}})
 \end{aligned}
 $$
@@ -68,7 +67,7 @@ $\widehat{p_i^{(t)}}$ is the predicted success probability after adding tree $f_
 $$
 \begin{aligned}
 obj(\widehat{W^{(t)}})
-&=\sum_i\frac{\partial LOSS(\widehat{W^{(t-1)}})}{\partial \widehat{W_i^{(t-1)}}}\widehat{f_{(t)}(x_i)}+\frac{1}{2}\sum_i\frac{\partial^2LOSS(\widehat{W^{(t-1)}})}{\partial\widehat{W_i^{(t-1)}}^2}{\widehat{f_{(t)}(x_i)}}^2+\pi(\widehat{f_{(t)}})+constant\\
+&=\sum_i\frac{\partial LOSS(\widehat{W^{(t-1)}})}{\partial \widehat{W_i^{(t-1)}}}\widehat{f_{(t)}(x_i)}+\frac{1}{2}\sum_i\frac{\partial^2LOSS(\widehat{W^{(t-1)}})}{\partial\widehat{W_i^{(t-1)}}^2}{\widehat{f_{(t)}(x_i)}}^2+\pi(\widehat{f_{(t)}})+constant\\\\\\
 &=\sum_i(\widehat{p_i^{(t-1)}}-y_i)\cdot \widehat{f_{(t)}(x_i)}+\frac{1}{2}\sum_i\widehat{p_i^{(t-1)}}\cdot(1-\widehat{p_i^{(t-1)}})\cdot {\widehat{f_{(t)}(x_i)}}^2+\pi(\widehat{f_{(t)}})+constant
 \end{aligned}
 $$
@@ -82,7 +81,7 @@ Finally, we put it all together:
 $$
 \begin{aligned}
 obj(\widehat{V^{(t)}})
-&=\sum_i(\widehat{p_i^{(t-1)}}-y_i)\cdot \widehat{f_{(t)}(x_i)}+\frac{1}{2}\sum_i\widehat{p_i^{(t-1)}}\cdot(1-\widehat{p_i^{(t-1)}})\cdot {\widehat{f_{(t)}(x_i)}}^2+\gamma L_{(t)}+\frac{1}{2}\lambda\sum_l{\widehat{V_l^{(t)}}}^2+constant\\
+&=\sum_i(\widehat{p_i^{(t-1)}}-y_i)\cdot \widehat{f_{(t)}(x_i)}+\frac{1}{2}\sum_i\widehat{p_i^{(t-1)}}\cdot(1-\widehat{p_i^{(t-1)}})\cdot {\widehat{f_{(t)}(x_i)}}^2+\gamma L_{(t)}+\frac{1}{2}\lambda\sum_l{\widehat{V_l^{(t)}}}^2+constant\\\\\\
 &=\sum_l[(\sum_{i\in I_l}\widehat{p_i^{(t-1)}}-y_i)\cdot \widehat{V_l^{(t)}}+\frac{1}{2}(\sum_{i\in I_l}\widehat{p_i^{(t-1)}}\cdot(1-\widehat{p_i^{(t-1)}})+\lambda)\cdot{\widehat{V_l^{(t)}}}^2]+\gamma L_{(t)}+constant
 \end{aligned}
 $$
@@ -95,14 +94,14 @@ At this point, we know how to calculate the best leaf score if we know the mappi
 
 $$
 \begin{aligned}
-Gain&=-\frac{1}{2}\frac{\sum_{i\in I_l}\widehat{p_i^{(t-1)}}-y_i}{\sum_{i\in I_l}\widehat{p_i^{(t-1)}}\cdot(1-\widehat{p_i^{(t-1)}})+\lambda}+\gamma L_{(t)}-(-\frac{1}{2}\frac{\sum_{i\in{I_{l_L}}}\widehat{p_i^{(t-1)}}-y_i}{\sum_{i\in {I_{l_L}}}\widehat{p_i^{(t-1)}}\cdot(1-\widehat{p_i^{(t-1)}})+\lambda}-\frac{1}{2}\frac{\sum_{i\in{I_{l_R}}}\widehat{p_i^{(t-1)}}-y_i}{\sum_{i\in {I_{l_R}}}\widehat{p_i^{(t-1)}}\cdot(1-\widehat{p_i^{(t-1)}})+\lambda}+\gamma (L_{(t)}+1))\\
+Gain&=-\frac{1}{2}\frac{\sum_{i\in I_l}\widehat{p_i^{(t-1)}}-y_i}{\sum_{i\in I_l}\widehat{p_i^{(t-1)}}\cdot(1-\widehat{p_i^{(t-1)}})+\lambda}+\gamma L_{(t)}-(-\frac{1}{2}\frac{\sum_{i\in{I_{l_L}}}\widehat{p_i^{(t-1)}}-y_i}{\sum_{i\in {I_{l_L}}}\widehat{p_i^{(t-1)}}\cdot(1-\widehat{p_i^{(t-1)}})+\lambda}-\frac{1}{2}\frac{\sum_{i\in{I_{l_R}}}\widehat{p_i^{(t-1)}}-y_i}{\sum_{i\in {I_{l_R}}}\widehat{p_i^{(t-1)}}\cdot(1-\widehat{p_i^{(t-1)}})+\lambda}+\gamma (L_{(t)}+1))\\\\\\
 &=\frac{1}{2}[\frac{\sum_{i\in{I_{l_L}}}\widehat{p_i^{(t-1)}}-y_i}{\sum_{i\in {I_{l_L}}}\widehat{p_i^{(t-1)}}\cdot(1-\widehat{p_i^{(t-1)}})+\lambda}+\frac{\sum_{i\in{I_{l_R}}}\widehat{p_i^{(t-1)}}-y_i}{\sum_{i\in {I_{l_R}}}\widehat{p_i^{(t-1)}}\cdot(1-\widehat{p_i^{(t-1)}})+\lambda}-\frac{\sum_{i\in {I_{l_L}}}\widehat{p_i^{(t-1)}}-y_i+\sum_{i\in {I_{l_R}}}\widehat{p_i^{(t-1)}}-y_i}{\sum_{i\in I_{l_L}}\widehat{p_i^{(t-1)}}\cdot(1-\widehat{p_i^{(t-1)}})+\sum_{i\in I_{l_R}}\widehat{p_i^{(t-1)}}\cdot(1-\widehat{p_i^{(t-1)}})+\lambda}]-\gamma
 \end{aligned}
 $$
 
 Split is allowed only when we have a positive gain.
 
-## Match xgboost result with manual calculation
+# Match xgboost result with manual calculation
 
 The data set I used is the agaricus data set in xgboost library. To make everything simpler, I only used the first 2000 observations with the response variable = 1 and the first 3000 observations with the response variable = 0. Also, only the first three predictors (cap-shape=bell, cap-shape=conical and cap-shape=convex) are used in the model.
 
@@ -135,8 +134,27 @@ eval_metric = "error". Misclassification rate is used for evaluation.
 
 verbose = 0. It tells xgboost not to print "error" after finishing each tree.
 
-<!--html_preserve--><div id="htmlwidget-c943df3d871b94fdd1bd" style="width:672px;height:480px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-c943df3d871b94fdd1bd">{"x":{"diagram":"digraph {\n\ngraph [layout = \"dot\",\n       rankdir = \"LR\"]\n\nnode [color = \"DimGray\",\n      style = \"filled\",\n      fontname = \"Helvetica\"]\n\nedge [color = \"DimGray\",\n     arrowsize = \"1.5\",\n     arrowhead = \"vee\",\n     fontname = \"Helvetica\"]\n\n  \"1\" [label = \"Tree 1\ncap-shape=bell\nCover: 1189.18127\nGain: 4.80300188\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"2\" [label = \"cap-shape=convex\nCover: 1147.43542\nGain: 0.0110983625\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"3\" [label = \"Leaf\nCover: 41.745903\nValue: -0.346059561\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"4\" [label = \"Leaf\nCover: 524.148438\nValue: -0.00805134326\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"5\" [label = \"Leaf\nCover: 623.286987\nValue: -0.00180733623\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"6\" [label = \"Tree 0\ncap-shape=bell\nCover: 1250\nGain: 75.0913696\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"7\" [label = \"cap-shape=convex\nCover: 1183.25\nGain: 9.77643013\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"8\" [label = \"Leaf\nCover: 66.75\nValue: -1.4243542\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"9\" [label = \"Leaf\nCover: 549.75\nValue: -0.438492954\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"10\" [label = \"Leaf\nCover: 633.5\nValue: -0.255319148\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n\"1\"->\"2\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"2\"->\"4\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"6\"->\"7\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"7\"->\"9\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"1\"->\"3\" [style = \"bold\", style = \"solid\"] \n\"2\"->\"5\" [style = \"solid\", style = \"solid\"] \n\"6\"->\"8\" [style = \"solid\", style = \"solid\"] \n\"7\"->\"10\" [style = \"solid\", style = \"solid\"] \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><!--/html_preserve-->
+
+```r
+bst = xgboost(data = train_data,
+              eta = 1,
+              gamma = 0,
+              max.depth = 3,
+              min_child_weight = 1,
+              max_delta_step = 0,
+              lambda = 1,
+              nround = 2,
+              objective = "binary:logistic",
+              base_score = 0.5,
+              eval_metric = "error",
+              verbose = 0)
+
+#xgb.model.dt.tree(train_X@Dimnames[[2]], model = bst)
+xgb.plot.tree(model=bst)
+```
+
+<!--html_preserve--><div id="htmlwidget-fac1aebdb42f0f1fee31" style="width:672px;height:480px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-fac1aebdb42f0f1fee31">{"x":{"diagram":"digraph {\n\ngraph [layout = \"dot\",\n       rankdir = \"LR\"]\n\nnode [color = \"DimGray\",\n      style = \"filled\",\n      fontname = \"Helvetica\"]\n\nedge [color = \"DimGray\",\n     arrowsize = \"1.5\",\n     arrowhead = \"vee\",\n     fontname = \"Helvetica\"]\n\n  \"1\" [label = \"Tree 1\ncap-shape=bell\nCover: 1189.18127\nGain: 4.80300188\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"2\" [label = \"cap-shape=convex\nCover: 1147.43542\nGain: 0.0110983625\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"3\" [label = \"Leaf\nCover: 41.745903\nValue: -0.346059561\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"4\" [label = \"Leaf\nCover: 524.148438\nValue: -0.00805134326\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"5\" [label = \"Leaf\nCover: 623.286987\nValue: -0.00180733623\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"6\" [label = \"Tree 0\ncap-shape=bell\nCover: 1250\nGain: 75.0913696\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"7\" [label = \"cap-shape=convex\nCover: 1183.25\nGain: 9.77643013\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"8\" [label = \"Leaf\nCover: 66.75\nValue: -1.4243542\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"9\" [label = \"Leaf\nCover: 549.75\nValue: -0.438492954\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"10\" [label = \"Leaf\nCover: 633.5\nValue: -0.255319148\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n\"1\"->\"2\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"2\"->\"4\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"6\"->\"7\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"7\"->\"9\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"1\"->\"3\" [style = \"bold\", style = \"solid\"] \n\"2\"->\"5\" [style = \"solid\", style = \"solid\"] \n\"6\"->\"8\" [style = \"solid\", style = \"solid\"] \n\"7\"->\"10\" [style = \"solid\", style = \"solid\"] \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><!--/html_preserve-->
 
 The Gain is same as our Gain formula but without $\frac{1}{2}$.
 
