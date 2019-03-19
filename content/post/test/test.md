@@ -15,6 +15,8 @@ This is an  document will be generated that includes both content as well as the
 
 {{< figure library="1" src="xgboost tree plot.png" title="A caption" >}}
 
+{{< figure src="xgboost tree plot.png" title="A caption" >}}
+
 
 ```r
 plot(rnorm(100))
