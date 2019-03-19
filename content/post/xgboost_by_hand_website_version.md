@@ -16,29 +16,29 @@ In this post, I will explain xgoost algorithm and manually solve a simple binary
 
 # Xgboost Algorithm for binary classification
 
-In generalized linear regression (GLM), we have $g(E[Y])=X\beta$ where the right hand side is the linear combination of predictors. In xgboost, it puts predictors into multiple trees (rounds) to come up with leaf score (weight) $w_{ki}$ for each tree $k$ and observation $i$. $w_{ki}$ is summed over all trees so that $w_{\cdot{i}}$ is the final leaf score for observation $i$. The vector $W$ formed by these $W_i=w_{\cdot{i}}$ is what appears on the right hand side of $g(E[Y])=X\beta$ instead of $X\beta$. In GLM, the common link function for a response variable following a bernoulli distribution is the logit canonical link. Xgboost also uses the logit link when specifying the "binary:logistic" objective. In GLM, we maximize the log likelihood of the estimator $\widehat{\beta}$ to find the desired $\widehat{\beta}$. In xgboost, the log likelihood of $\widehat{W}$ is maximized which is equivalent to minimizing the loss function $LOSS(\widehat{W})=-l(\widehat{W})$.
+In generalized linear regression (GLM), we have $g(E[Y])=X\beta$ where the right hand side is the linear combination of predictors. In xgboost, it puts predictors into multiple trees (rounds) to come up with leaf score (weight) $w\_{ki}$ for each tree $k$ and observation $i$. $w\_{ki}$ is summed over all trees so that $w\_{\cdot{i}}$ is the final leaf score for observation $i$. The vector $W$ formed by these $W\_i=w\_{\cdot{i}}$ is what appears on the right hand side of $g(E[Y])=X\beta$ instead of $X\beta$. In GLM, the common link function for a response variable following a bernoulli distribution is the logit canonical link. Xgboost also uses the logit link when specifying the "binary:logistic" objective. In GLM, we maximize the log likelihood of the estimator $\widehat{\beta}$ to find the desired $\widehat{\beta}$. In xgboost, the log likelihood of $\widehat{W}$ is maximized which is equivalent to minimizing the loss function $LOSS(\widehat{W})=-l(\widehat{W})$.
 
 $$
 \begin{aligned}
 \underset{\widehat{W}}{\operatorname{argmax}}\;l(\widehat{W})
-&=\ln(\prod_i(\frac{1}{1+e^{-\widehat{W_i}}})^{y_i}(1-\frac{1}{1+e^{-\widehat{W_i}}})^{1-y_i})
-=\ln(\prod_i(\frac{1}{1+e^{-\widehat{W_i}}})^{y_i}(\frac{1}{1+e^{\widehat{W_i}}})^{1-y_i})\\\\\\
-&=-\sum_iy_i\ln(1+e^{-\widehat{W_i}})-\sum_i(1-y_i)\ln(1+e^{\widehat{W_i}})\\\\\\
+&=\ln(\prod\_i(\frac{1}{1+e^{-\widehat{W\_i}}})^{y\_i}(1-\frac{1}{1+e^{-\widehat{W\_i}}})^{1-y\_i})
+=\ln(\prod\_i(\frac{1}{1+e^{-\widehat{W\_i}}})^{y\_i}(\frac{1}{1+e^{\widehat{W\_i}}})^{1-y\_i})\\\\\\
+&=-\sum\_iy\_i\ln(1+e^{-\widehat{W\_i}})-\sum\_i(1-y\_i)\ln(1+e^{\widehat{W\_i}})\\\\\\
 \underset{\widehat{W}}{\operatorname{argmin}}\;LOSS(\widehat{W})
 &=-l(\widehat{W})
-=\sum_iy_i\ln(1+e^{-\widehat{W_i}})+(1-y_i)\ln(1+e^{\widehat{W_i}})
+=\sum\_iy\_i\ln(1+e^{-\widehat{W\_i}})+(1-y\_i)\ln(1+e^{\widehat{W\_i}})
 \end{aligned}
 $$
 
-Adding the regularization term $\sum_k\pi(\widehat{f_k})$, we have the objective function $obj(\widehat{W})=LOSS(\widehat{W})+\sum_k\pi(\widehat{f_k})$. $f_k$ is the function maps observations $i$ to $w_{ki}$ using tree $k$. $\pi(f_k)$ measures the complexity of tree $k$.
+Adding the regularization term $\sum\_k\pi(\widehat{f\_k})$, we have the objective function $obj(\widehat{W})=LOSS(\widehat{W})+\sum\_k\pi(\widehat{f\_k})$. $f\_k$ is the function maps observations $i$ to $w\_{ki}$ using tree $k$. $\pi(f\_k)$ measures the complexity of tree $k$.
 
-In order to add tree $\widehat{f_{(t)}}$ to the existing tree collection ${\widehat{f_{(1)}},\widehat{f_{(2)}},...,\widehat{f_{(t-1)}}}$ at time $(t)$, we need to minimize the objective function $obj(\widehat{W^{(t)}})=LOSS(\widehat{W^{(t-1)}}+\widehat{f_{(t)}(X)})+\pi(\widehat{f_{(t)}})+constant$. $\widehat{W^{(t)}}$ is the leaf score mapped from our data $X$ using the newly added tree $f_{(t)}$. Using Taylor expansin of the loss function up to the second order we have:
+In order to add tree $\widehat{f\_{(t)}}$ to the existing tree collection ${\widehat{f\_{(1)}},\widehat{f\_{(2)}},...,\widehat{f\_{(t-1)}}}$ at time $(t)$, we need to minimize the objective function $obj(\widehat{W^{(t)}})=LOSS(\widehat{W^{(t-1)}}+\widehat{f\_{(t)}(X)})+\pi(\widehat{f\_{(t)}})+constant$. $\widehat{W^{(t)}}$ is the leaf score mapped from our data $X$ using the newly added tree $f\_{(t)}$. Using Taylor expansin of the loss function up to the second order we have:
 
 $$
 \begin{aligned}
 obj(\widehat{W^{(t)}})
-&=LOSS(\widehat{W^{(t-1)}})+\sum_i\frac{\partial LOSS(\widehat{W^{(t-1)}})}{\partial\widehat{W_i^{(t-1)}}}\widehat{f_{(t)}(x_i)}+\frac{1}{2}\sum_i\frac{\partial^2 LOSS(\widehat{W^{(t-1)}})}{\partial\widehat{W_i^{(t-1)}}^2}{\widehat{f_{(t)}(x_i)}}^2+\pi(\widehat{f_{(t)}})+constant\\\\\\
-&=\sum_i\frac{\partial LOSS(\widehat{W^{(t-1)}})}{\partial \widehat{W_i^{(t-1)}}}\widehat{f_{(t)}(x_i)}+\frac{1}{2}\sum_i\frac{\partial^2LOSS(\widehat{W^{(t-1)}})}{\partial\widehat{W_i^{(t-1)}}^2}{\widehat{f_{(t)}(x_i)}}^2+\pi(\widehat{f_{(t)}})+constant
+&=LOSS(\widehat{W^{(t-1)}})+\sum\_i\frac{\partial LOSS(\widehat{W^{(t-1)}})}{\partial\widehat{W\_i^{(t-1)}}}\widehat{f\_{(t)}(x\_i)}+\frac{1}{2}\sum\_i\frac{\partial^2 LOSS(\widehat{W^{(t-1)}})}{\partial\widehat{W\_i^{(t-1)}}^2}{\widehat{f\_{(t)}(x\_i)}}^2+\pi(\widehat{f\_{(t)}})+constant\\\\\\
+&=\sum\_i\frac{\partial LOSS(\widehat{W^{(t-1)}})}{\partial \widehat{W\_i^{(t-1)}}}\widehat{f\_{(t)}(x\_i)}+\frac{1}{2}\sum\_i\frac{\partial^2LOSS(\widehat{W^{(t-1)}})}{\partial\widehat{W\_i^{(t-1)}}^2}{\widehat{f\_{(t)}(x\_i)}}^2+\pi(\widehat{f\_{(t)}})+constant
 \end{aligned}
 $$
 
@@ -46,59 +46,59 @@ Let's derive the first (gradient) and second (hessian) order derivative of the l
 
 $$
 \begin{aligned}
-\frac{\partial LOSS(\widehat{W^{(t)}})}{\partial \widehat{W_i^{(t)}}}
-&=\frac{\partial y_i\ln(1+e^{-\widehat{W_i^{(t)}}})+(1-y_i)\ln(1+e^{\widehat{W_i^{(t)}}})}{\partial \widehat{W_i^{(t)}}}\\\\\\
-&=\frac{-y_i+(1-y_i)e^{\widehat{W_i^{(t)}}}}{1+e^{\widehat{W_i^{(t)}}}}\\\\\\
-&=\frac{-(y_ie^{-\widehat{W_i^{(t)}}}+y_i)+1}{e^{-\widehat{W_i^{(t)}}}+1}\\\\\\
-&=\frac{1}{1+e^{-\widehat{W_i^{(t)}}}}-y_i\\\\\\
-&=\widehat{p_i^{(t)}}-y_i
+\frac{\partial LOSS(\widehat{W^{(t)}})}{\partial \widehat{W\_i^{(t)}}}
+&=\frac{\partial y\_i\ln(1+e^{-\widehat{W\_i^{(t)}}})+(1-y\_i)\ln(1+e^{\widehat{W\_i^{(t)}}})}{\partial \widehat{W\_i^{(t)}}}\\\\\\
+&=\frac{-y\_i+(1-y\_i)e^{\widehat{W\_i^{(t)}}}}{1+e^{\widehat{W\_i^{(t)}}}}\\\\\\
+&=\frac{-(y\_ie^{-\widehat{W\_i^{(t)}}}+y\_i)+1}{e^{-\widehat{W\_i^{(t)}}}+1}\\\\\\
+&=\frac{1}{1+e^{-\widehat{W\_i^{(t)}}}}-y\_i\\\\\\
+&=\widehat{p\_i^{(t)}}-y\_i
 \end{aligned}
 $$
 
 $$
 \begin{aligned}
-\frac{\partial^2LOSS(\widehat{W^{(t)}})}{\partial\widehat{W_i^{(t)}}^2}
-&=-(1+e^{-\widehat{W_i^{(t)}}})^{-2}(-e^{-\widehat{W_i^{(t)}}})\\\\\\
-&=\frac{1}{1+e^{-\widehat{W_i^{(t)}}}}\cdot\frac{e^{-\widehat{W_i^{(t)}}}}{1+e^{-\widehat{W_i^{(t)}}}}\\\\\\
-&=\frac{1}{1+e^{-\widehat{W_i^{(t)}}}}\cdot(1-\frac{1}{1+e^{-\widehat{W_i^{(t)}}}})\\\\\\
-&=\widehat{p_i^{(t)}}\cdot(1-\widehat{p_i^{(t)}})
+\frac{\partial^2LOSS(\widehat{W^{(t)}})}{\partial\widehat{W\_i^{(t)}}^2}
+&=-(1+e^{-\widehat{W\_i^{(t)}}})^{-2}(-e^{-\widehat{W\_i^{(t)}}})\\\\\\
+&=\frac{1}{1+e^{-\widehat{W\_i^{(t)}}}}\cdot\frac{e^{-\widehat{W\_i^{(t)}}}}{1+e^{-\widehat{W\_i^{(t)}}}}\\\\\\
+&=\frac{1}{1+e^{-\widehat{W\_i^{(t)}}}}\cdot(1-\frac{1}{1+e^{-\widehat{W\_i^{(t)}}}})\\\\\\
+&=\widehat{p\_i^{(t)}}\cdot(1-\widehat{p\_i^{(t)}})
 \end{aligned}
 $$
 
-$\widehat{p_i^{(t)}}$ is the predicted success probability after adding tree $f_{(t)}$. Plug the gradient and the hessian into the objective function we get:
+$\widehat{p\_i^{(t)}}$ is the predicted success probability after adding tree $f\_{(t)}$. Plug the gradient and the hessian into the objective function we get:
 
 $$
 \begin{aligned}
 obj(\widehat{W^{(t)}})
-&=\sum_i\frac{\partial LOSS(\widehat{W^{(t-1)}})}{\partial \widehat{W_i^{(t-1)}}}\widehat{f_{(t)}(x_i)}+\frac{1}{2}\sum_i\frac{\partial^2LOSS(\widehat{W^{(t-1)}})}{\partial\widehat{W_i^{(t-1)}}^2}{\widehat{f_{(t)}(x_i)}}^2+\pi(\widehat{f_{(t)}})+constant\\\\\\
-&=\sum_i(\widehat{p_i^{(t-1)}}-y_i)\cdot \widehat{f_{(t)}(x_i)}+\frac{1}{2}\sum_i\widehat{p_i^{(t-1)}}\cdot(1-\widehat{p_i^{(t-1)}})\cdot {\widehat{f_{(t)}(x_i)}}^2+\pi(\widehat{f_{(t)}})+constant
+&=\sum\_i\frac{\partial LOSS(\widehat{W^{(t-1)}})}{\partial \widehat{W\_i^{(t-1)}}}\widehat{f\_{(t)}(x\_i)}+\frac{1}{2}\sum\_i\frac{\partial^2LOSS(\widehat{W^{(t-1)}})}{\partial\widehat{W\_i^{(t-1)}}^2}{\widehat{f\_{(t)}(x\_i)}}^2+\pi(\widehat{f\_{(t)}})+constant\\\\\\
+&=\sum\_i(\widehat{p\_i^{(t-1)}}-y\_i)\cdot \widehat{f\_{(t)}(x\_i)}+\frac{1}{2}\sum\_i\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})\cdot {\widehat{f\_{(t)}(x\_i)}}^2+\pi(\widehat{f\_{(t)}})+constant
 \end{aligned}
 $$
 
-Before we define the tree complexity measure. Let me introduce another representation of $W_i^{(t)}$, the leaf score of observation $i$ in tree $f_{(t)}$. Assume tree $f_{k}$ has $L$ leaves and $V^{k}$ is a vector of length $L$ representing the leaf score of the tree. Each leaf node $l$ has leaf score $V_l^{k}$. Let's also assume function $q(i)$ maps the observation $i$ to leaf $l\epsilon\{1,2,...,L\}$ of the tree. Then we can write $W_i^{(t)}$ as $V_{q(i)}^{(t)}$.
+Before we define the tree complexity measure. Let me introduce another representation of $W\_i^{(t)}$, the leaf score of observation $i$ in tree $f\_{(t)}$. Assume tree $f\_{k}$ has $L$ leaves and $V^{k}$ is a vector of length $L$ representing the leaf score of the tree. Each leaf node $l$ has leaf score $V\_l^{k}$. Let's also assume function $q(i)$ maps the observation $i$ to leaf $l\epsilon\{1,2,...,L\}$ of the tree. Then we can write $W\_i^{(t)}$ as $V\_{q(i)}^{(t)}$.
 
-The complexity measure of a tree $f_k$ is defined as $\pi(f_k)=\gamma L+\frac{1}{2}\lambda\sum_lV_l^2$. $\gamma$ (gamma) and $\lambda$ (lambda) are tuning parameters. It takes both the number of leaves and the leaf score in to account. Notice the sum of squares in the second part is not the L2 norm of $W$, but the L2 norm of $V$ instead.
+The complexity measure of a tree $f\_k$ is defined as $\pi(f\_k)=\gamma L+\frac{1}{2}\lambda\sum\_lV\_l^2$. $\gamma$ (gamma) and $\lambda$ (lambda) are tuning parameters. It takes both the number of leaves and the leaf score in to account. Notice the sum of squares in the second part is not the L2 norm of $W$, but the L2 norm of $V$ instead.
 
 Finally, we put it all together:
 
 $$
 \begin{aligned}
 obj(\widehat{V^{(t)}})
-&=\sum_i(\widehat{p_i^{(t-1)}}-y_i)\cdot \widehat{f_{(t)}(x_i)}+\frac{1}{2}\sum_i\widehat{p_i^{(t-1)}}\cdot(1-\widehat{p_i^{(t-1)}})\cdot {\widehat{f_{(t)}(x_i)}}^2+\gamma L_{(t)}+\frac{1}{2}\lambda\sum_l{\widehat{V_l^{(t)}}}^2+constant\\\\\\
-&=\sum_l[(\sum_{i\in I_l}\widehat{p_i^{(t-1)}}-y_i)\cdot \widehat{V_l^{(t)}}+\frac{1}{2}(\sum_{i\in I_l}\widehat{p_i^{(t-1)}}\cdot(1-\widehat{p_i^{(t-1)}})+\lambda)\cdot{\widehat{V_l^{(t)}}}^2]+\gamma L_{(t)}+constant
+&=\sum\_i(\widehat{p\_i^{(t-1)}}-y\_i)\cdot \widehat{f\_{(t)}(x\_i)}+\frac{1}{2}\sum\_i\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})\cdot {\widehat{f\_{(t)}(x\_i)}}^2+\gamma L\_{(t)}+\frac{1}{2}\lambda\sum\_l{\widehat{V\_l^{(t)}}}^2+constant\\\\\\
+&=\sum\_l[(\sum\_{i\in I\_l}\widehat{p\_i^{(t-1)}}-y\_i)\cdot \widehat{V\_l^{(t)}}+\frac{1}{2}(\sum\_{i\in I\_l}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\lambda)\cdot{\widehat{V\_l^{(t)}}}^2]+\gamma L\_{(t)}+constant
 \end{aligned}
 $$
 
-$\widehat{V_l^{(t)}}$ is the leaf score vector of the estimated tree $\widehat{f_{(t)}}$. $L_{(t)}$ is the number of leaves in the estimated tree. $I_l$ is the collection of index of observations who are mapped to leaf $l$ of the estimated tree.
+$\widehat{V\_l^{(t)}}$ is the leaf score vector of the estimated tree $\widehat{f\_{(t)}}$. $L\_{(t)}$ is the number of leaves in the estimated tree. $I\_l$ is the collection of index of observations who are mapped to leaf $l$ of the estimated tree.
 
-Since $\widehat{V_l^{(t)}}$ are independent to each other for different value of $l$ and the objective function is a convex quadratic function of $\widehat{V_l^{(t)}}$, the maximum $-\frac{1}{2}\sum_l\frac{(\sum_{i\in I_l}\widehat{p_i^{(t-1)}}-y_i)^2}{\sum_{i\in I_l}\widehat{p_i^{(t-1)}}\cdot(1-\widehat{p_i^{(t-1)}})+\lambda}+\gamma L_{(t)}$ is attained at $\widehat{V_l^{(t)}}=-\frac{\sum_{i\in I_l}\widehat{p_i^{(t-1)}}-y_i}{\sum_{i\in I_l}\widehat{p_i^{(t-1)}}\cdot(1-\widehat{p_i^{(t-1)}})+\lambda}$
+Since $\widehat{V\_l^{(t)}}$ are independent to each other for different value of $l$ and the objective function is a convex quadratic function of $\widehat{V\_l^{(t)}}$, the maximum $-\frac{1}{2}\sum\_l\frac{(\sum\_{i\in I\_l}\widehat{p\_i^{(t-1)}}-y\_i)^2}{\sum\_{i\in I\_l}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\lambda}+\gamma L\_{(t)}$ is attained at $\widehat{V\_l^{(t)}}=-\frac{\sum\_{i\in I\_l}\widehat{p\_i^{(t-1)}}-y\_i}{\sum\_{i\in I\_l}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\lambda}$
 
-At this point, we know how to calculate the best leaf score if we know the mapping from observations to leaves in each estimated tree. But how do we construct each tree? Imaging if we split a leaf $l$ into left leaf $l_L$ and right leaf $l_R$. Then the reduce (Gain) in the objective function is:
+At this point, we know how to calculate the best leaf score if we know the mapping from observations to leaves in each estimated tree. But how do we construct each tree? Imaging if we split a leaf $l$ into left leaf $l\_L$ and right leaf $l\_R$. Then the reduce (Gain) in the objective function is:
 
 $$
 \begin{aligned}
-Gain&=-\frac{1}{2}\frac{\sum_{i\in I_l}\widehat{p_i^{(t-1)}}-y_i}{\sum_{i\in I_l}\widehat{p_i^{(t-1)}}\cdot(1-\widehat{p_i^{(t-1)}})+\lambda}+\gamma L_{(t)}-(-\frac{1}{2}\frac{\sum_{i\in{I_{l_L}}}\widehat{p_i^{(t-1)}}-y_i}{\sum_{i\in {I_{l_L}}}\widehat{p_i^{(t-1)}}\cdot(1-\widehat{p_i^{(t-1)}})+\lambda}-\frac{1}{2}\frac{\sum_{i\in{I_{l_R}}}\widehat{p_i^{(t-1)}}-y_i}{\sum_{i\in {I_{l_R}}}\widehat{p_i^{(t-1)}}\cdot(1-\widehat{p_i^{(t-1)}})+\lambda}+\gamma (L_{(t)}+1))\\\\\\
-&=\frac{1}{2}[\frac{\sum_{i\in{I_{l_L}}}\widehat{p_i^{(t-1)}}-y_i}{\sum_{i\in {I_{l_L}}}\widehat{p_i^{(t-1)}}\cdot(1-\widehat{p_i^{(t-1)}})+\lambda}+\frac{\sum_{i\in{I_{l_R}}}\widehat{p_i^{(t-1)}}-y_i}{\sum_{i\in {I_{l_R}}}\widehat{p_i^{(t-1)}}\cdot(1-\widehat{p_i^{(t-1)}})+\lambda}-\frac{\sum_{i\in {I_{l_L}}}\widehat{p_i^{(t-1)}}-y_i+\sum_{i\in {I_{l_R}}}\widehat{p_i^{(t-1)}}-y_i}{\sum_{i\in I_{l_L}}\widehat{p_i^{(t-1)}}\cdot(1-\widehat{p_i^{(t-1)}})+\sum_{i\in I_{l_R}}\widehat{p_i^{(t-1)}}\cdot(1-\widehat{p_i^{(t-1)}})+\lambda}]-\gamma
+Gain&=-\frac{1}{2}\frac{\sum\_{i\in I\_l}\widehat{p\_i^{(t-1)}}-y\_i}{\sum\_{i\in I\_l}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\lambda}+\gamma L\_{(t)}-(-\frac{1}{2}\frac{\sum\_{i\in{I\_{l\_L}}}\widehat{p\_i^{(t-1)}}-y\_i}{\sum\_{i\in {I\_{l\_L}}}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\lambda}-\frac{1}{2}\frac{\sum\_{i\in{I\_{l\_R}}}\widehat{p\_i^{(t-1)}}-y\_i}{\sum\_{i\in {I\_{l\_R}}}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\lambda}+\gamma (L\_{(t)}+1))\\\\\\
+&=\frac{1}{2}[\frac{\sum\_{i\in{I\_{l\_L}}}\widehat{p\_i^{(t-1)}}-y\_i}{\sum\_{i\in {I\_{l\_L}}}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\lambda}+\frac{\sum\_{i\in{I\_{l\_R}}}\widehat{p\_i^{(t-1)}}-y\_i}{\sum\_{i\in {I\_{l\_R}}}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\lambda}-\frac{\sum\_{i\in {I\_{l\_L}}}\widehat{p\_i^{(t-1)}}-y\_i+\sum\_{i\in {I\_{l\_R}}}\widehat{p\_i^{(t-1)}}-y\_i}{\sum\_{i\in I\_{l\_L}}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\sum\_{i\in I\_{l\_R}}\widehat{p\_i^{(t-1)}}\cdot(1-\widehat{p\_i^{(t-1)}})+\lambda}]-\gamma
 \end{aligned}
 $$
 
@@ -156,8 +156,8 @@ bst = xgboost(data = train_data,
 xgb.plot.tree(model=bst)
 ```
 
-<!--html_preserve--><div id="htmlwidget-703e2104395946e80067" style="width:672px;height:480px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-703e2104395946e80067">{"x":{"diagram":"digraph {\n\ngraph [layout = \"dot\",\n       rankdir = \"LR\"]\n\nnode [color = \"DimGray\",\n      style = \"filled\",\n      fontname = \"Helvetica\"]\n\nedge [color = \"DimGray\",\n     arrowsize = \"1.5\",\n     arrowhead = \"vee\",\n     fontname = \"Helvetica\"]\n\n  \"1\" [label = \"Tree 1\ncap-shape=bell\nCover: 1189.18127\nGain: 4.80300188\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"2\" [label = \"cap-shape=convex\nCover: 1147.43542\nGain: 0.0110983625\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"3\" [label = \"Leaf\nCover: 41.745903\nValue: -0.346059561\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"4\" [label = \"Leaf\nCover: 524.148438\nValue: -0.00805134326\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"5\" [label = \"Leaf\nCover: 623.286987\nValue: -0.00180733623\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"6\" [label = \"Tree 0\ncap-shape=bell\nCover: 1250\nGain: 75.0913696\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"7\" [label = \"cap-shape=convex\nCover: 1183.25\nGain: 9.77643013\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"8\" [label = \"Leaf\nCover: 66.75\nValue: -1.4243542\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"9\" [label = \"Leaf\nCover: 549.75\nValue: -0.438492954\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"10\" [label = \"Leaf\nCover: 633.5\nValue: -0.255319148\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n\"1\"->\"2\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"2\"->\"4\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"6\"->\"7\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"7\"->\"9\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"1\"->\"3\" [style = \"bold\", style = \"solid\"] \n\"2\"->\"5\" [style = \"solid\", style = \"solid\"] \n\"6\"->\"8\" [style = \"solid\", style = \"solid\"] \n\"7\"->\"10\" [style = \"solid\", style = \"solid\"] \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><!--/html_preserve-->
+<!--html_preserve--><div id="htmlwidget-537b623ffd14ef70f5ea" style="width:672px;height:480px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-537b623ffd14ef70f5ea">{"x":{"diagram":"digraph {\n\ngraph [layout = \"dot\",\n       rankdir = \"LR\"]\n\nnode [color = \"DimGray\",\n      style = \"filled\",\n      fontname = \"Helvetica\"]\n\nedge [color = \"DimGray\",\n     arrowsize = \"1.5\",\n     arrowhead = \"vee\",\n     fontname = \"Helvetica\"]\n\n  \"1\" [label = \"Tree 1\ncap-shape=bell\nCover: 1189.18127\nGain: 4.80300188\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"2\" [label = \"cap-shape=convex\nCover: 1147.43542\nGain: 0.0110983625\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"3\" [label = \"Leaf\nCover: 41.745903\nValue: -0.346059561\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"4\" [label = \"Leaf\nCover: 524.148438\nValue: -0.00805134326\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"5\" [label = \"Leaf\nCover: 623.286987\nValue: -0.00180733623\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"6\" [label = \"Tree 0\ncap-shape=bell\nCover: 1250\nGain: 75.0913696\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"7\" [label = \"cap-shape=convex\nCover: 1183.25\nGain: 9.77643013\", shape = \"rectangle\", fontcolor = \"black\", fillcolor = \"Beige\"] \n  \"8\" [label = \"Leaf\nCover: 66.75\nValue: -1.4243542\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"9\" [label = \"Leaf\nCover: 549.75\nValue: -0.438492954\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n  \"10\" [label = \"Leaf\nCover: 633.5\nValue: -0.255319148\", shape = \"oval\", fontcolor = \"black\", fillcolor = \"Khaki\"] \n\"1\"->\"2\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"2\"->\"4\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"6\"->\"7\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"7\"->\"9\" [label = \"< -9.53674316e-07\", style = \"bold\"] \n\"1\"->\"3\" [style = \"bold\", style = \"solid\"] \n\"2\"->\"5\" [style = \"solid\", style = \"solid\"] \n\"6\"->\"8\" [style = \"solid\", style = \"solid\"] \n\"7\"->\"10\" [style = \"solid\", style = \"solid\"] \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><!--/html_preserve-->
 
 The Gain is same as our Gain formula but without $\frac{1}{2}$.
 
