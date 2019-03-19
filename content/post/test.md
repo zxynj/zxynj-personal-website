@@ -1,7 +1,7 @@
 ---
 title: "test"
 author: "Xinyu Zhang"
-date: "March 19, 2019"
+date: "March 18, 2019"
 output:
   html_document:
     keep_md: true
@@ -12,13 +12,8 @@ output:
 
 
 
-## R Markdown
+In this post, I will explain xgoost algorithm and manually solve a simple binary classification problem using the algorithm.
 
-This is an R Markdown d
+# Xgboost Algorithm for binary classification
 
-1 = eaf score (weight) $w_{ki}$ for each tr
-
-2 = oeaf score (weight) $w\\_{ki}$ for each tr
-
-
-
+In generalized linear regression (GLM), we have $g(E[Y])=X\beta$ where the right hand side is the linear combination of predictors. In xgboost, it puts predictors into multiple trees (rounds) to come up with leaf score (weight) $w_{ki}$ for each tree $k$ and observation $i$. 
