@@ -13,7 +13,7 @@ In this post, I will explain xgoost algorithm and manually solve a simple binary
 
 ## Xgboost Algorithm for binary classification
 
-In generalized linear regression (GLM), we have $g(E[Y])=X\beta$ where the right hand side is the linear combination of predictors. In xgboost, it puts predictors into multiple trees (rounds) to come up with leaf score (weight) $w\_{ki}$ for each tree $k$ and observation $i$. $w\_{ki}$ is summed over all trees so that $w\_{\cdot{i}}$ is the final leaf score for observation $i$. The vector $W$ formed by these $W\_i=w\_{\cdot{i}}$ is what appears on the right hand side of $g(E[Y])=X\beta$ instead of $X\beta$. In GLM, the common link function for a response variable following a bernoulli distribution is the logit canonical link. Xgboost also uses the logit link when specifying the "binary:logistic" objective. In GLM, we maximize the log likelihood of the estimator $\widehat{\beta}$ to find the desired $\widehat{\beta}$. In xgboost, the log likelihood of $\widehat{W}$ is maximized which is equivalent to minimizing the loss function $LOSS(\widehat{W})=-l(\widehat{W})$.
+In generalized linear regression (GLM), we have $g(E[Y])=X\beta$ where the right hand side is the linear combination of predictors. In xgboost, predictors are put into multiple trees (rounds) to come up with a leaf score (weight) $w\_{ki}$ for each tree $k$ and observation $i$. $w\_{ki}$ is summed over all trees so that $w\_{\cdot{i}}$ is the final leaf score for observation $i$. The vector $W$ formed by these $W\_i=w\_{\cdot{i}}$ is what appears on the right hand side of $g(E[Y])=X\beta$ instead of $X\beta$. In GLM, the common link function for a response variable following a bernoulli distribution is the logit canonical link. Xgboost also uses the logit link when specifying the "binary:logistic" objective. In GLM, we maximize the log likelihood of the estimator $\widehat{\beta}$ to find the desired $\widehat{\beta}$. In xgboost, the log likelihood of $\widehat{W}$ is also maximized which is equivalent to minimizing the loss function $LOSS(\widehat{W})=-l(\widehat{W})$.
 
 $$
 \small
@@ -30,7 +30,7 @@ $$
 
 Adding the regularization term $\sum\_k\pi(\widehat{f\_k})$, we have the objective function $obj(\widehat{W})=LOSS(\widehat{W})+\sum\_k\pi(\widehat{f\_k})$. $f\_k$ is the function maps observations $i$ to $w\_{ki}$ using tree $k$. $\pi(f\_k)$ measures the complexity of tree $k$.
 
-In order to add tree $\widehat{f\_{(t)}}$ to the existing tree collection ${\widehat{f\_{(1)}},\widehat{f\_{(2)}},...,\widehat{f\_{(t-1)}}}$ at time $(t)$, we need to minimize the objective function $obj(\widehat{W^{(t)}})=LOSS(\widehat{W^{(t-1)}}+\widehat{f\_{(t)}(X)})+\pi(\widehat{f\_{(t)}})+constant$. $\widehat{W^{(t)}}$ is the leaf score mapped from our data $X$ using the newly added tree $f\_{(t)}$. Using Taylor expansin of the loss function up to the second order we have:
+In order to add tree $\widehat{f\_{(t)}}$ to the existing tree collection ${\widehat{f\_{(1)}},\widehat{f\_{(2)}},...,\widehat{f\_{(t-1)}}}$ at time $(t)$, we need to minimize the objective function $obj(\widehat{W^{(t)}})=LOSS(\widehat{W^{(t-1)}}+\widehat{f\_{(t)}(X)})+\pi(\widehat{f\_{(t)}})+constant$. $\widehat{W^{(t)}}$ is the leaf score mapped from our data $X$ using the newly added tree $\widehat{f\_{(t)}}$. Using Taylor expansin of the loss function up to the second order we have:
 
 $$
 \small
@@ -63,7 +63,7 @@ $$
 \end{aligned}
 $$
 
-$\widehat{p\_i^{(t)}}$ is the predicted success probability after adding tree $f\_{(t)}$. Plug the gradient and the hessian into the objective function we get:
+$\widehat{p\_i^{(t)}}$ is the predicted success probability after adding tree $\widehat{f\_{(t)}}$. Plug the gradient and hessian into the objective function we get:
 
 $$
 \small
@@ -113,7 +113,7 @@ Split is allowed only when we have a positive gain.
 
 ## Match xgboost result with manual calculation
 
-The data set I used is the agaricus data set in xgboost library. To make everything simpler, I only used the first 2000 observations with the response variable = 1 and the first 3000 observations with the response variable = 0. Also, only the first three predictors (cap-shape=bell, cap-shape=conical and cap-shape=convex) are used in the model.
+I will use R in this section. The data set I used is the agaricus data set in xgboost library. To make everything simpler, I only used the first 2000 observations with the response variable = 1 and the first 3000 observations with the response variable = 0. Also, only the first three predictors (cap-shape=bell, cap-shape=conical and cap-shape=convex) are used in the model.
 
 
 ```r
@@ -141,34 +141,67 @@ xgb.test.data = xgb.DMatrix(test_X, label = test_y, missing = NA)
 
 The following parameters are used:
 
-eta = 1. It is the shrinkage parameter multiplied to the leaf score after finishing each tree.
+*eta* = 1. It is the shrinkage parameter multiplied to the leaf score after finishing each tree.
 
-gamma = 0. It is the $\gamma$ in our formula.
+*gamma* = 0. It is the $\gamma$ in our formula.
 
-max.depth = 3. It is the maxinum depth of each three beside the root node.
+*max_depth* = 3. It is the maxinum depth of each three beside the root node.
 
-min_child_weight = 1. It is the minimum sum of the hessian required in a possible child node for a certrain node. Sum of hessian is a measure of the number of observations. It is exactly the number of observations when the loss function is the residual sum of squares and no regularization term. The Cover in the tree plot below is same as sum of hessian.
+*min_child_weight* = 1. It is the minimum sum of the hessian required in a possible child node for a certrain node. Sum of hessian is a measure of the number of observations. It is exactly the number of observations when the loss function is the residual sum of squares and no regularization term. The Cover in the tree plot below is same as sum of hessian.
 
-max_delta_step = 0. The leaf score is capped by max_delta_step before getting multiplied by eta. It is most effective in situations like extreme imbalanced logistic regression. In which case, the hessian is almost 0 and the leaf nodes are nearly infinite, so eta is not enough. 0 means no capping.
-l
-ambda = 1. It is the $\lambda$ in our formula.
+*max_delta_step* = 0. The leaf score is capped by max_delta_step before getting multiplied by eta. It is most effective in situations like extreme imbalanced logistic regression. In which case, the hessian is almost 0 and the leaf nodes are nearly infinite, so eta is not enough. 0 means no capping.
 
-nround = 2. It is the number of trees to grow or number of iterations.
+*lambda* = 1. It is the $\lambda$ in our formula.
 
-objective = "binary:logistic". It is to specify the objective function is what we used in our formula.
+*nround* = 2. It is the number of trees to grow or number of iterations.
 
-base_score = 0.5. It is the initial success probability. Xgboost will drive it to a more reasonable leaf score.
+*objective* = "binary:logistic". It is to specify the objective function is what we used in our formula.
 
-eval_metric = "error". Misclassification rate is used for evaluation.
+*base_score* = 0.5. It is the initial success probability. Xgboost will drive it to a more reasonable leaf score.
 
-verbose = 0. It tells xgboost not to print "error" after finishing each tree.
+*eval_metric* = "error". Misclassification rate is used for evaluation.
+
+*verbose* = 0. It tells xgboost not to print "error" after finishing each tree.
+
+Official explanation of the [parameter](https://xgboost.readthedocs.io/en/latest/parameter.html) mentioned above are listed below:
+
+* *eta* [default=0.3, alias: learning_rate]
+    + Step size shrinkage used in update to prevents overfitting. After each boosting step, we can directly get the weights of new features, and eta shrinks the feature weights to make the boosting process more conservative.
+    + range: [0,???].
+* *gamma* [default=0, alias: min_split_loss]
+    + Minimum loss reduction required to make a further partition on a leaf node of the tree. The larger gamma is, the more conservative the algorithm will be.
+    + range: [0,???].
+* *max_depth* [default=6]
+    + Maximum depth of a tree. Increasing this value will make the model more complex and more likely to overfit. 0 is only accepted in lossguided growing policy when tree_method is set as hist and it indicates no limit on depth. Beware that XGBoost aggressively consumes memory when training a deep tree.
+    + range: [0,???] (0 is only accepted in lossguided growing policy when tree_method is set as hist).
+* *min_child_weight* [default=1]
+    + Minimum sum of instance weight (hessian) needed in a child. If the tree partition step results in a leaf node with the sum of instance weight less than min_child_weight, then the building process will give up further partitioning. In linear regression task, this simply corresponds to minimum number of instances needed to be in each node. The larger min_child_weight is, the more conservative the algorithm will be.
+    + range: [0,???]
+* *max_delta_step* [default=0]
+    + Maximum delta step we allow each leaf output to be. If the value is set to 0, it means there is no constraint. If it is set to a positive value, it can help making the update step more conservative. Usually this parameter is not needed, but it might help in logistic regression when class is extremely imbalanced. Set it to value of 1-10 might help control the update.
+    + range: [0,???]
+* *lambda* [default=1, alias: reg_lambda]
+    + L2 regularization term on weights. Increasing this value will make model more conservative.
+* *num_round*
+    + The number of rounds for boosting.
+* *objective* [default=reg:squarederror]
+    + binary:logistic: logistic regression for binary classification, output probability.
+* *base_score* [default=0.5]
+    + The initial prediction score of all instances, global bias.
+    + For sufficient number of iterations, changing this value will not have too much effect.
+* *eval_metric*  [default according to objective]
+    + Evaluation metrics for validation data, a default metric will be assigned according to objective (rmse for regression, and error for classification, mean average precision for ranking).
+    + User can add multiple evaluation metrics. Python users: remember to pass the metrics in as list of parameters pairs instead of map, so that latter eval_metric won't override previous one.
+    + error: Binary classification error rate. It is calculated as #(wrong cases)/#(all cases). For the predictions, the evaluation will regard the instances with prediction value larger than 0.5 as positive instances, and the others as negative instances.
+* *verbosity* [default=1]
+    + Verbosity of printing messages. Valid values are 0 (silent), 1 (warning), 2 (info), 3 (debug). Sometimes XGBoost tries to change configurations based on heuristics, which is displayed as warning message. If there's unexpected behaviour, please try to increase value of verbosity.
 
 
 ```r
 bst = xgboost(data = train_data,
               eta = 1,
               gamma = 0,
-              max.depth = 3,
+              max_depth = 3,
               min_child_weight = 1,
               max_delta_step = 0,
               lambda = 1,
@@ -184,11 +217,11 @@ bst = xgboost(data = train_data,
 
 {{< figure library="1" src="xgboost tree plot.png" title="Tree Plot using Xgboost library" >}}
 
-The Gain is same as our Gain formula but without $\frac{1}{2}$.
+Gain is same as our Gain formula but without $\frac{1}{2}$.
 
-The Cover is the sum of hesssian in that node as mentioned earlier.
+Cover is the sum of hesssians in that node as mentioned earlier.
 
-The Value is the leaf score in that leaf.
+Value is the leaf score in that leaf.
 
 Now let's manually perform the xgboost. We first initiate the estimated success probability as 0.5. It will only be updated when a tree is finished not at each node in the tree. Then we calculate and report the Gain, node Cover, child node Cover, leaf score and leaf success probability if a split is allowed. Since all of our predictors are binary, I will assign the predictor = 0 as the left child node and the predictor = 1 as the right child node.
 
@@ -251,7 +284,7 @@ cat('"cap-shape=bell" is used to make the split. The gain is ',
 ## The right leaf success probability is 0.1939799.
 ```
 
-Let's check out the report of other possible splits.
+Let's check out the reports of other possible splits of the first level of the tree.
 
 
 ```
@@ -309,7 +342,9 @@ Since the right child node cover is smaller than 1, the split is not allowed.
 ## The right leaf success probability is 0.4365147.
 ```
 
-We will use this only allowed split.
+We will use this only allowed split for "cap-shape=bell" = 0 for the second level of the tree.
+
+There are no observations with "cap-shape=conical" = 1 when "cap-shape=bell" = 1, so the child node cover of the split using "cap-shape=conical" is smaller than 1 and the split is not allowed. Same goes for spitting "cap-shape=bell" = 1 with "cap-shape=convex". Therefore, we will not split "cap-shape=conical" = 1.
 
 Let's see the report for all possible split for "cap-shape=bell" = 0 and "cap-shape=convex" = 0.
 
@@ -325,11 +360,9 @@ Let's see the report for all possible split for "cap-shape=bell" = 0 and "cap-sh
 ## The right leaf success probability is 0.6607564.
 ```
 
-Since the right child node cover is smaller than 1, the split is not allowed.
+Since the right child node cover is smaller than 1, the split is not allowed. Therefore, we will not split "cap-shape=bell" = 0 and "cap-shape=convex" = 0.
 
-There are no observations with "cap-shape=conical" = 1 when "cap-shape=bell" = 1, so the child node cover of the split using "cap-shape=conical" is smaller than 1 and the split is not allowed. Same goes for spitting "cap-shape=bell" = 1 with "cap-shape=convex".
-
-Therefore, for the first tree we will use the right child node of the initial split with "cap-shape=bell" as a leaf. Its leaf score is -1.424354 and its leaf success probability is 0.1939799. We will also use the two child nodes of splitting "cap-shape=bell" = 0 as leaves. The left leaf score is -0.438493. The right leaf score is -0.2553191. The left leaf success probability is 0.3921001. The right leaf success probability is 0.4365147.
+To conclude, for the first tree we will use the right child node of the initial split with "cap-shape=bell" as a leaf. Its leaf score is -1.424354 and its leaf success probability is 0.1939799. We will also use the two child nodes of splitting "cap-shape=bell" = 0 as leaves. The left leaf score is -0.438493. The right leaf score is -0.2553191. The left leaf success probability is 0.3921001. The right leaf success probability is 0.4365147.
 
 Before we construct the second tree. We will update the estimated success probability using the first tree.
 
@@ -340,7 +373,7 @@ p[which(train_X[,'cap-shape=bell']==0 & train_X[,'cap-shape=convex']==0)] = 0.39
 p[which(train_X[,'cap-shape=bell']==0 & train_X[,'cap-shape=convex']==1)] = 0.4365147
 ```
 
-Let's see the report of all the possible splits of the second tree.
+Let's see the report of all the possible initial splits of the second tree.
 
 
 ```
@@ -410,7 +443,9 @@ Since the right child node cover is smaller than 1, the split is not allowed.
 ## The right leaf success probability is 0.4995482.
 ```
 
-We will use this only allowed split.
+We will use this only allowed split for "cap-shape=bell" = 0 for the second level of the tree.
+
+There are no observations with "cap-shape=conical" = 1 when "cap-shape=bell" = 1, so the child node cover of the split using "cap-shape=conical" is smaller than 1 and the split is not allowed. Same goes for spitting "cap-shape=bell" = 1 with "cap-shape=convex". Therefore, we will not split "cap-shape=conical" = 1.
 
 Let's see the report for all possible split for "cap-shape=bell" = 0 and "cap-shape=convex" = 0.
 
@@ -426,10 +461,8 @@ Let's see the report for all possible split for "cap-shape=bell" = 0 and "cap-sh
 ## The right leaf success probability is 0.6949393.
 ```
 
-Since the right child node cover is smaller than 1, the split is not allowed.
+Since the right child node cover is smaller than 1, the split is not allowed. Therefore, we will not split "cap-shape=bell" = 0 and "cap-shape=convex" = 0.
 
-There are no observations with "cap-shape=conical" = 1 when "cap-shape=bell" = 1, so the child node cover of the split using "cap-shape=conical" is smaller than 1 and the split is not allowed. Same goes for spitting "cap-shape=bell" = 1 with "cap-shape=convex".
+To conclude, for the first tree we will use the right child node of the initial split with "cap-shape=bell" as a leaf. Its leaf score is 41.7459 and its leaf success probability is 0.4143383. We will also use the two child nodes of splitting "cap-shape=bell" = 0 as leaves. The left leaf score is -0.008051286. The right leaf score is -0.001807261. The left leaf success probability is 0.4979872. The right leaf success probability is 0.4995482.
 
-Therefore, for the first tree we will use the right child node of the initial split with "cap-shape=bell" as a leaf. Its leaf score is 41.7459 and its leaf success probability is 0.4143383. We will also use the two child nodes of splitting "cap-shape=bell" = 0 as leaves. The left leaf score is -0.008051286. The right leaf score is -0.001807261. The left leaf success probability is 0.4979872. The right leaf success probability is 0.4995482.
-
-All gain, cover, leaf score and leaf success probability match the tree plot using the xgboost library.
+All gain, cover, leaf score and leaf success probability match the tree plot using the xgboost R library.

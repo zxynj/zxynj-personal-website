@@ -16,7 +16,7 @@ role = ""
 organizations = []
 
 # Short bio (displayed in user profile at end of posts)
-bio = "My research interests include statistical modeling, machine learning and data visualization."
+bio = "My research interests include things I want to know and things I need to understand."
 
 # Enter email to display Gravatar (if Gravatar enabled in Config)
 email = ""

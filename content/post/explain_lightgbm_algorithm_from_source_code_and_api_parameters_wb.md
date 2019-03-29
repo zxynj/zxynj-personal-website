@@ -12,7 +12,7 @@ output:
 
 In this post, I will use try to explain Lightgbm's key algorithm from its source code and API parameters.
 
-## Objective function: adding L1 regularization
+## Objective function
 
 Remember in [Xgboost](https://xgboost.readthedocs.io/en/latest/tutorials/model.html) the objective function is: $obj^{(t)}=\sum\_{j=1}^T [2\cdot G\_jw\_j+(H\_j+\lambda)w\_j^2]+2\gamma T$. Its maximum $-\sum\_{j=1}^T \frac{G\_j^2}{H\_j+\lambda}+2\gamma T$ is attained at $w\_j^*=-\frac{G\_j}{H\_j+\lambda}$. $obj^{(t)}$ represents the objective function in the $(t)$th iteration. $T$ is the number of leaves of the estimated tree in the $(t)$th iteration. $G\_j$ and $H\_j$ are the sum of gradients and hessians of all observations ended up in $j$th leaf. $w\_j$ is the leaf score of $j$th leaf. $\lambda$ is the weight of the L2 regularization. The L2 regularization is applied to the leaf scores of a tree. $\gamma$ is the weight of the number of leaves regularization.
 
@@ -21,6 +21,7 @@ The resulting split gain is: $Gain=[\frac{G\_L^2}{H\_L^2+\lambda}+\frac{G\_R^2}{
 It is reasonable to also add a L1 regularization of the leaf score into the objective function. If we use $L\_1$ as the weight of the L1 regularization and $L\_2$ as the weight of the L2 regularization instead of $\lambda$, then we have:
 
 $$
+\small
 \begin{aligned}
 obj^{(t)}
 &=\sum\_{j=1}^T [2\cdot (G\_jw\_j+L\_1|w\_j|)+(H\_j+L\_2)w\_j^2]+2\gamma T\\\\\\
@@ -65,6 +66,7 @@ The output here is the leaf score. The leaf objective function is defined as $-\
 Lightgbm uses a different numerator from ours, but are they really that different? Let's have a look at the square of the two numerators of the leaf objective function.
 
 $$
+\small
 [sgn(G\_j) \cdot max(0,|G\_j|-L\_1)]^2=G\_j^2+L\_1^2\pm2G\_jL\_1=[G\_j+sgn(w\_j)L\_1]^2
 $$
 
@@ -73,9 +75,9 @@ Therefore in some cases these two definitions work the same.
 The corresponding API parameters are *lambda_l1* and *lambda_l2*.
 
 * *lambda_l1*, default = 0.0, type = double, aliases: reg_alpha, constraints: lambda_l1 >= 0.
-    + L1 regularization
-* *lambda_l2*, default = 0.0, type = double, aliases: reg_lambda, lambda, constraints: lambda_l2 >= 0.0
-    + L2 regularization
+    + L1 regularization.
+* *lambda_l2*, default = 0.0, type = double, aliases: reg_lambda, lambda, constraints: lambda_l2 >= 0.0.
+    + L2 regularization.
 
 ## Tree structure: leaf-wise tree growth
 
@@ -111,14 +113,14 @@ We can see the implementation in the following [source code](https://github.com/
 
 ## Dealing with categorical variables.
 
-When dealing with categorical variables we commonly use one vs many (one hot encoding) or many vs many. Even though many vs many can become complicated very easily when the number of levels in a categorical variable is large, but it tend to build a less deeper tree when comparing to one vs many method since it can have a much larger gain at the split.
+When dealing with categorical variables we commonly use one vs many (one hot encoding) or many vs many. Even though many vs many can become complicated very easily when the number of levels in a categorical variable is large, but it tends to build a less deeper tree when comparing to one vs many method since it can have a much larger gain at the split.
 
-Lightgbm uses one vs many when the number of bins are smaller than or equal to the API parameter *max_cat_to_onehot*.
+Lightgbm uses one vs many when the number of bins is smaller than or equal to the API parameter *max_cat_to_onehot*.
 
 * *max_cat_to_onehot*, default = 4, type = int, constraints: max_cat_to_onehot > 0.
     + when number of categories of one feature smaller than or equal to max_cat_to_onehot, one-vs-other split algorithm will be used.
 
-It goes over every level (bin) and use it as one of the child node and the rest levels as the other.
+It goes over every level (bin) and use it as one of the child nodes and the rest levels as the other.
 
 
 ```rcpp
@@ -145,7 +147,7 @@ Above is the [source code](https://github.com/Microsoft/LightGBM/blob/master/src
 * *min_sum_hessian_in_leaf*, default = 1e-3, type = double, aliases: min_sum_hessian_per_leaf, min_sum_hessian, min_hessian, min_child_weight, constraints: min_sum_hessian_in_leaf >= 0.0.
     + minimal sum hessian in one leaf. Like min_data_in_leaf, it can be used to deal with over-fitting.
 
-We should also notice that it calculates the other child node's data count and sum hessians using the parent node and the current level. This is the historgram subtraction speedup mentioned in the lightgbm [features](https://lightgbm.readthedocs.io/en/latest/Features.html) page.
+We should also notice that it calculates the other child node's data count and sum hessians using the parent node and the current level. This is the histogram subtraction speedup mentioned in the lightgbm [features](https://lightgbm.readthedocs.io/en/latest/Features.html) page.
 
 If the current level is splittable and the objective function is larger than the sum of the parent node's objective function and the API paramter *min_gain_to_split*, the split gain and the split is recorded. They are updated as the model goes over all levels are finds one that provides the largest split gain.
 
@@ -233,7 +235,7 @@ From the [source code](https://github.com/Microsoft/LightGBM/blob/master/src/tre
 
 Note:  
 1. This is not an exhaustive best group split search. It essentially groups up the levels with similar $\frac{G}{H+cat_smooth}$ and see which group split is the best.  
-2. The reason for the model to iterate over both directions is to deal with the missing values. When it iterates from left to right the missing values are always put in the right child node. Similarly they are put in the left child node when the model iterates from right to left. This way, both situations of the final location of the missing value are evaluated. This is called sparsity aware split-finding which is also used in [xgboost](https://arxiv.org/pdf/1603.02754.pdf).  
+2. The reason for the model to iterate over both directions is to deal with the missing values. When it iterates from left to right the missing values are always put in the right child node. Similarly, they are put in the left child node when the model iterates from right to left. This way, both situations of the final location of the missing value are evaluated. This is called sparsity aware split-finding which is also used in [xgboost](https://arxiv.org/pdf/1603.02754.pdf).  
 3. When the model iterates from left to right, the left level group which is lower bounded by *min_data_per_group* is put in the left child node which is lower bounded by *min_data_in_leaf*. So in this case it is actually lower bounded by the larger of the two parameters.
 
 ## Dealing with continuous variables
@@ -280,7 +282,7 @@ The finding best split process is very much similar to the process for categoric
 
 ## Exclusive Feature Bundling (EFB)
 
-Common dimention reduction methods such as principle component analysis or projection pursuit assume features to contain redundent information. This might not be true in practice. High dimensional data are usually very sparse, lightgbm use EFB not to filter out the redundent information but to combine some not so mutually exclusive sparse feature in order to acchieve dimension reduction.
+Common dimension reduction methods such as principle component analysis or projection pursuit assume features to contain redundant information. This might not be true in practice. High dimensional data are usually very sparse, lightgbm use EFB not to filter out the redundant information but to combine some not so mutually exclusive sparse feature in order to acchieve dimension reduction.
 
 We say two features are mutually exclusive when either one takes a nonzero value A, the other is never A. Therefore, two features are very likely to be mutually exclusive when they rarely take nonzero values simultaneously. In another word, if both two features only have a small number of nonzero values (low conflict counts), then they should be combined together. EFB does not simply combine these two features by summing up their values. It shifts the value of the second feature by the range of the first feature before making the summation. For example, say our first feature has a range of [0,10] and its first observation is 5. Our second feature has a range of [0,20] and its first observation is 15. Then the first observation of the combined feature is 5 + (10 + 15) = 30. This way the distribution of the individual feature pertains to the combined feature to a certain degree.
 
@@ -339,7 +341,7 @@ The following code is line 106-136 in the [source code](https://github.com/Micro
   return features_in_group;
 ```
 
-It combines a feature into the current feature bundle when the their conflict count is lower or equal to max_error_cnt which is determined by the API parameter *max_conflict_rate*. Otherwise, a new bundle (group) is created.
+It combines a feature into the current feature bundle when the conflict count is lower or equal to max_error_cnt which is determined by the API parameter *max_conflict_rate*. Otherwise, a new bundle (group) is created.
 
 * *max_conflict_rate*, default = 0.0, type = double, constraints: 0.0 <= max_conflict_rate < 1.0.
     + max conflict rate for bundles in EFB.
