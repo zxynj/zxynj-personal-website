@@ -137,7 +137,7 @@ bs.two.sample.test(x, y, alternative = "two.sided", mu = 0.5, nrep = 1000)
 ## alternative hypothesis: true difference in means is not equal to 0.5
 ```
 
-Lastly, let's do a null hypothesis test to check the type I error. I first generate 10000 pairs of sample X and Y from unif(1,3) and 1 + exp(1) respectively. Each X has a size of 10 numbers. Each Y has a size of 20 numbers. Then I use the function we defined to perform two sample boostrap test on each pair of samples and record their p-values. Finally, I count the number of p-values smaller than 0.05 to see if their proportion is close to 0.05.
+Lastly, let's do a null hypothesis test to check the type I error. I first generate 50000 pairs of sample X and Y from unif(1,3) and 1 + exp(1) respectively. Each X has a size of 10 numbers. Each Y has a size of 20 numbers. Then I use the function we defined to perform two sample boostrap test on each pair of samples and record their p-values. Finally, I count the number of p-values smaller than 0.05 to see if their proportion is close to 0.05.
 
 
 ```r
