@@ -1,7 +1,6 @@
 ---
 title: "Natural Disaster and Oil Refinenry Visualization"
-summary: "Visualize historical natural disasters and oil refineries in the United States on map2."
-authors: "Xinyu Zhang"
+author: "Xinyu Zhang"
 date: 2019-04-02
 output:
   html_document:
