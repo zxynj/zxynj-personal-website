@@ -1,7 +1,7 @@
 ---
 title: "Natural Disaster and Oil Refinenry Location Visualization"
 author: "Xinyu Zhang"
-date: "March 18, 2019"
+date: 2019-04-02
 output:
   html_document:
     keep_md: true
