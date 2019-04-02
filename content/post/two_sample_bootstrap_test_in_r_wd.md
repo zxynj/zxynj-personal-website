@@ -1,7 +1,8 @@
 ---
 title: "Two Sample Bootstrap Test in R"
 author: "Xinyu Zhang"
-date: 2017-04-27
+date: 2017-05-27
+lastmod: 2018-05-27
 output:
   html_document:
     keep_md: true
