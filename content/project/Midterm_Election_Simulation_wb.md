@@ -24,4 +24,4 @@ Detailed description is [here](https://www.utdallas.edu/~ammann/stat6341/node13.
 
 ## R code and other files:
 
-Please find them in the [GitHub repository](https://github.com/zxynj/R-shiny---Midterm-Election-Simulation-Project).
+Please find files in the [GitHub repository](https://github.com/zxynj/R-shiny---Midterm-Election-Simulation-Project).

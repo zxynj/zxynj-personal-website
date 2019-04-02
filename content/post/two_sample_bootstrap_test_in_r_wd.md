@@ -1,16 +1,13 @@
 ---
 title: "Two Sample Bootstrap Test in R"
 author: "Xinyu Zhang"
-date: 2019-03-30
-lastmod: 2019-03-30
+date: "March 30, 2019"
 output:
   html_document:
     keep_md: true
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+
 
 In this post, I will provide a bootstrap algorithm to test the difference between two population means and implement it in R.
 
@@ -41,7 +38,8 @@ Finally, we can use the simulated test statistics to come up with a critical reg
 
 ## R function and example
 
-```{r}
+
+```r
 bs.two.sample.test = function(x, y,
                               alternative = c("two.sided", "less", "greater"),
                               mu = 0, nrep = 1000, parallel = FALSE) {
@@ -120,7 +118,8 @@ A list containing the following components:
  - *ts.dist.sim*: the simulated test statistics under the null hypothesis.
 
 **Examples**
-```{r}
+
+```r
 set.seed(123)
 x = runif(10, 1, 3) #mean = 2, var = 1/3
 y = rexp(20, 1) #mean = 1, var = 1
@@ -128,9 +127,20 @@ y = rexp(20, 1) #mean = 1, var = 1
 bs.two.sample.test(x, y, alternative = "two.sided", mu = 0.5, nrep = 1000)
 ```
 
+```
+## 
+##    Two Sample Bootstrap Test
+## 
+## data: x and y
+## 1000 replications
+## test statistic of the original sample: 1.570439, p-value: 0.066
+## alternative hypothesis: true difference in means is not equal to 0.5
+```
+
 Lastly, let's do a null hypothesis test to check the type I error. I first generate 50000 pairs of sample X and Y from unif(1,3) and 1 + exp(1) respectively. Each X has a size of 10 numbers. Each Y has a size of 20 numbers. Then I use the function we defined to perform two sample boostrap test on each pair of samples and record their p-values. Finally, I count the number of p-values smaller than 0.05 to see if their proportion is close to 0.05.
 
-```{r eval=FALSE}
+
+```r
 set.seed(123)
 nrep.p.value = 50000
 
@@ -147,9 +157,9 @@ mean(p.value.vec < 0.05)
 stopCluster(cl2)
 ```
 
-```{r echo=FALSE}
-type1.error = 0.0416
-type1.error
+
+```
+## [1] 0.0416
 ```
 
 
