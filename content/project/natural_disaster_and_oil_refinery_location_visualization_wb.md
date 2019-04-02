@@ -19,7 +19,7 @@ I first downloaded 60 years of natural disaster data from Federal Emergency Mana
 
 ## Results:
 
-Click picture title to open interactive Tableau Public page.
+Please click picture title to open interactive Tableau Public page.
 
 [60 Years of Natural Disasters in the lower 48 States of US](https://public.tableau.com/views/NaturalDisasterandOilRefinerieLocation/NaturalDisasters?:embed=y&:display_count=yes&publish=yes)
 {{< figure library="1" src="natural disaster and oil refinery visualization 1.PNG">}}
@@ -39,7 +39,7 @@ Click picture title to open interactive Tableau Public page.
 [The Bottom 4 most Frequent Disasters in the States with ExxonMobil's Oil Refineries](https://public.tableau.com/views/NaturalDisasterandOilRefinerieLocation/DisasterleastMultiMaps?:embed=y&:display_count=yes&publish=yes)
 {{< figure library="1" src="natural disaster and oil refinery visualization 6.PNG">}}
 
-[Story](https://public.tableau.com/views/NaturalDisasterandOilRefinerieLocation/Story?:embed=y&:display_count=yes&publish=yes)
+[Story in Tableau](https://public.tableau.com/views/NaturalDisasterandOilRefinerieLocation/Story?:embed=y&:display_count=yes&publish=yes)
 {{< figure library="1" src="natural disaster and oil refinery visualization 7.PNG">}}
 
 ## Python web crawler code:
