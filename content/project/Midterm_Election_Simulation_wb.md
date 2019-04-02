@@ -17,10 +17,7 @@ Detailed description is [here](https://www.utdallas.edu/~ammann/stat6341/node13.
 
 ## Results:
 
-* [Presentation]
-(files/FINAL Midterm election simulation project presentation.pdf)
-
-{{% staticref "files/FINAL Midterm election simulation project presentation.pdf" "newtab" %}}Download my CV{{% /staticref %}}
+* {{% staticref "files/FINAL Midterm election simulation project presentation.pdf" "newtab" %}}Presentation{{% /staticref %}}
 
 * [Interactive R Shiny app](https://zxynj.shinyapps.io/Midterm_election_simulation_project_Stat_6341/).
 {{< figure library="1" src="midterm election r shiny.PNG">}}
