@@ -17,10 +17,13 @@ Detailed description is [here](https://www.utdallas.edu/~ammann/stat6341/node13.
 
 ## Results:
 
-[Interactive R Shiny app](https://zxynj.shinyapps.io/Midterm_election_simulation_project_Stat_6341/).
-{{< figure library="1" src="midterm election r shiny.PNG">}}
+* [Presentation]
+(files/FINAL Midterm election simulation project presentation.pdf)
 
-[Presentation](files/FINAL Midterm election simulation project presentation.pdf)
+{{% staticref "files/FINAL Midterm election simulation project presentation.pdf" "newtab" %}}Download my CV{{% /staticref %}}
+
+* [Interactive R Shiny app](https://zxynj.shinyapps.io/Midterm_election_simulation_project_Stat_6341/).
+{{< figure library="1" src="midterm election r shiny.PNG">}}
 
 ## R code and other files:
 
