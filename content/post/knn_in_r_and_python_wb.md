@@ -123,13 +123,13 @@ data.describe()
 KNN is designed for continuous predictors. To handle categorical predictors, we need to define a distance function $D\_{ij}$ for categorical variable $X\_{cat}$.
 
 $\begin{aligned}
-D\_{ij}=\begin{cases}1 & \text{if }x\_{cat}\text{ is different for observation }i\text{ and }j \\\\\\0 &\text{otherwise}\end{cases}\\\\\\
+D\_{ij}=\begin{cases}1 & \text{if }x\_{cat}\text{ is different for observation }i\text{ and }j \\\\\\ 0 &\text{otherwise}\end{cases}\\\\\\
 \end{aligned}$
 
 This is equivalent to using $\sqrt{0.5}$ instead of 1 in one hot encoding on the categorical variable and keeping all levels instead of removing one of them. For example, a categorical variable with 3 levels
 
 <!-- html table generated in R 3.4.4 by xtable 1.8-3 package -->
-<!-- Tue Apr 16 04:40:46 2019 -->
+<!-- Tue Apr 16 04:54:28 2019 -->
 <table border=1>
 <tr> <th>  </th> <th> Cat </th>  </tr>
   <tr> <td> 1 </td> <td align="right"> A </td> </tr>
@@ -143,7 +143,7 @@ This is equivalent to using $\sqrt{0.5}$ instead of 1 in one hot encoding on the
 becomes:
 
 <!-- html table generated in R 3.4.4 by xtable 1.8-3 package -->
-<!-- Tue Apr 16 04:40:46 2019 -->
+<!-- Tue Apr 16 04:54:29 2019 -->
 <table border=1>
 <tr> <th>  </th> <th> Cat_A </th> <th> Cat_B </th> <th> Cat_C </th>  </tr>
   <tr> <td> 1 </td> <td align="right"> 0.7071 </td> <td align="right"> 0.0000 </td> <td align="right"> 0.0000 </td> </tr>
@@ -220,7 +220,7 @@ cat("The best K is",knn_fit$bestTune$k,"based on 10-fold CV.")
 The CV evaluation score table is below. Evaluation metrics are [accuracy](https://en.wikipedia.org/wiki/Accuracy_and_precision#In_binary_classification) and [kappa](https://en.wikipedia.org/wiki/Cohen%27s_kappa#Calculation).
 
 <!-- html table generated in R 3.4.4 by xtable 1.8-3 package -->
-<!-- Tue Apr 16 04:40:50 2019 -->
+<!-- Tue Apr 16 04:54:33 2019 -->
 <table border=1>
 <tr> <th>  </th> <th> k </th> <th> Accuracy </th> <th> Kappa </th> <th> AccuracySD </th> <th> KappaSD </th>  </tr>
   <tr> <td> 1 </td> <td align="right">   1 </td> <td align="right"> 0.69 </td> <td align="right"> 0.33 </td> <td align="right"> 0.04 </td> <td align="right"> 0.09 </td> </tr>
@@ -333,6 +333,7 @@ The CV evaluation score table is below.
 
 
 ```python
+print(
 pd.DataFrame({'K':results['param_n_neighbors'].data,
               'Train Accuracy Average':results['mean_train_Accuracy'],
               'Train Accuracy Standard Error':results['std_train_Accuracy'],
@@ -341,7 +342,7 @@ pd.DataFrame({'K':results['param_n_neighbors'].data,
               'Train Kappa Average':results['mean_train_Kappa'],
               'Train Kappa Standard Error':results['std_train_Kappa'],
               'Test Kappa Average':results['mean_test_Kappa'],
-              'Test Kappa Standard Error':results['std_test_Kappa']})
+              'Test Kappa Standard Error':results['std_test_Kappa']}))
 ```
 
 ```
@@ -538,7 +539,7 @@ train_y_bin=(np.array(train_y) == 'CH').astype(int)
 fpr, tpr, th = roc_curve(train_y_bin, pred_prob)
 roc_auc = auc(fpr,tpr)
 
-plt.figure(figsize=(10,10))
+plt.figure(figsize=(5,5))
 lw = 2
 plt.plot(fpr, tpr, color='darkorange',
          lw=lw, label='ROC curve (area = %0.2f)' % roc_auc)
@@ -566,7 +567,7 @@ plt.legend(loc="lower right")
 plt.show()
 ```
 
-<img src="knn_in_r_and_python_wb_files/figure-html/unnamed-chunk-18-1.png" width="960" />
+<img src="knn_in_r_and_python_wb_files/figure-html/unnamed-chunk-18-1.png" width="480" />
 
 The last plot is the decision boundary plot for different stores (1, 2, 3, 4 and 7).
 
@@ -590,7 +591,7 @@ for (i in 1:5) {
   plot_name=paste("plot_",i,sep="")
   grid_name=paste("grid_",i,sep="")
   col_name=paste("X",i,sep="")
-  tt=paste("KNN (K=15) Decision Boundary of Store ",i,sep="")
+  tt=paste("KNN Decision Boundary for Store ",i,sep="")
   assign(plot_name,
          ggplot(data.frame(grid_X6_X7,prob=predict(knn_fit,get(grid_name),type = "prob")$CH), aes(X6, X7)) +
          stat_contour(aes(z=prob), breaks=c(0.5), size=0.7) +
@@ -602,14 +603,6 @@ for (i in 1:5) {
 }
 
 grid.arrange(plot_1,plot_2,plot_3,plot_4,plot_5,ncol=2)
-```
-
-```
-## Warning in min(var, na.rm = TRUE): no non-missing arguments to min;
-## returning Inf
-
-## Warning in min(var, na.rm = TRUE): no non-missing arguments to min;
-## returning Inf
 ```
 
 ![](knn_in_r_and_python_wb_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
@@ -656,40 +649,12 @@ for idx,grid_ind,tt,tb_X in zip(product([0,1,2],[0, 1]),
                                   cmap=cmap_bold,
                                   edgecolor='k',
                                   s=30)
-    axarr[idx[0], idx[1]].set_title(tt)
+    axarr[idx[0], idx[1]].set_title(tt, fontsize=20)
     axarr[idx[0], idx[1]].set_xlim(X6_grid.min(), X6_grid.max())
     axarr[idx[0], idx[1]].set_ylim(X7_grid.min(), X7_grid.max())
-```
-
-```
-## <matplotlib.collections.QuadMesh object at 0x00000000616F54E0>
-## <matplotlib.collections.PathCollection object at 0x00000000616F59B0>
-## Text(0.5, 1.0, 'KNN Decision Boundary for Store 1')
-## (-3.2552227514784433, 1.4847772485215605)
-## (-3.16798789696544, 2.112012103034565)
-## <matplotlib.collections.QuadMesh object at 0x000000000786D9B0>
-## <matplotlib.collections.PathCollection object at 0x00000000616F5F98>
-## Text(0.5, 1.0, 'KNN Decision Boundary for Store 2')
-## (-3.2552227514784433, 1.4847772485215605)
-## (-3.16798789696544, 2.112012103034565)
-## <matplotlib.collections.QuadMesh object at 0x0000000005676DD8>
-## <matplotlib.collections.PathCollection object at 0x00000000617037F0>
-## Text(0.5, 1.0, 'KNN Decision Boundary for Store 3')
-## (-3.2552227514784433, 1.4847772485215605)
-## (-3.16798789696544, 2.112012103034565)
-## <matplotlib.collections.QuadMesh object at 0x0000000005694358>
-## <matplotlib.collections.PathCollection object at 0x00000000616F5780>
-## Text(0.5, 1.0, 'KNN Decision Boundary for Store 4')
-## (-3.2552227514784433, 1.4847772485215605)
-## (-3.16798789696544, 2.112012103034565)
-## <matplotlib.collections.QuadMesh object at 0x00000000056BD710>
-## <matplotlib.collections.PathCollection object at 0x00000000617124E0>
-## Text(0.5, 1.0, 'KNN Decision Boundary for Store 7')
-## (-3.2552227514784433, 1.4847772485215605)
-## (-3.16798789696544, 2.112012103034565)
-```
-
-```python
+    axarr[idx[0], idx[1]].set_xlabel("SalePriceMM", fontsize=15)
+    axarr[idx[0], idx[1]].set_ylabel("SalePriceCH", fontsize=15)
+    
 plt.show()
 ```
 
