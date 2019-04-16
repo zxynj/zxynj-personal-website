@@ -129,7 +129,7 @@ D\_{ij}=\begin{cases}1 & \text{if }x\_{cat}\text{ is different for observation }
 This is equivalent to using $\sqrt{0.5}$ instead of 1 in one hot encoding on the categorical variable and keeping all levels instead of removing one of them. For example, a categorical variable with 3 levels
 
 <!-- html table generated in R 3.4.4 by xtable 1.8-3 package -->
-<!-- Tue Apr 16 04:54:28 2019 -->
+<!-- Tue Apr 16 05:11:19 2019 -->
 <table border=1>
 <tr> <th>  </th> <th> Cat </th>  </tr>
   <tr> <td> 1 </td> <td align="right"> A </td> </tr>
@@ -143,7 +143,7 @@ This is equivalent to using $\sqrt{0.5}$ instead of 1 in one hot encoding on the
 becomes:
 
 <!-- html table generated in R 3.4.4 by xtable 1.8-3 package -->
-<!-- Tue Apr 16 04:54:29 2019 -->
+<!-- Tue Apr 16 05:11:20 2019 -->
 <table border=1>
 <tr> <th>  </th> <th> Cat_A </th> <th> Cat_B </th> <th> Cat_C </th>  </tr>
   <tr> <td> 1 </td> <td align="right"> 0.7071 </td> <td align="right"> 0.0000 </td> <td align="right"> 0.0000 </td> </tr>
@@ -219,41 +219,44 @@ cat("The best K is",knn_fit$bestTune$k,"based on 10-fold CV.")
 
 The CV evaluation score table is below. Evaluation metrics are [accuracy](https://en.wikipedia.org/wiki/Accuracy_and_precision#In_binary_classification) and [kappa](https://en.wikipedia.org/wiki/Cohen%27s_kappa#Calculation).
 
-<!-- html table generated in R 3.4.4 by xtable 1.8-3 package -->
-<!-- Tue Apr 16 04:54:33 2019 -->
-<table border=1>
-<tr> <th>  </th> <th> k </th> <th> Accuracy </th> <th> Kappa </th> <th> AccuracySD </th> <th> KappaSD </th>  </tr>
-  <tr> <td> 1 </td> <td align="right">   1 </td> <td align="right"> 0.69 </td> <td align="right"> 0.33 </td> <td align="right"> 0.04 </td> <td align="right"> 0.09 </td> </tr>
-  <tr> <td> 2 </td> <td align="right">   2 </td> <td align="right"> 0.70 </td> <td align="right"> 0.35 </td> <td align="right"> 0.05 </td> <td align="right"> 0.11 </td> </tr>
-  <tr> <td> 3 </td> <td align="right">   3 </td> <td align="right"> 0.70 </td> <td align="right"> 0.35 </td> <td align="right"> 0.05 </td> <td align="right"> 0.10 </td> </tr>
-  <tr> <td> 4 </td> <td align="right">   4 </td> <td align="right"> 0.70 </td> <td align="right"> 0.35 </td> <td align="right"> 0.05 </td> <td align="right"> 0.11 </td> </tr>
-  <tr> <td> 5 </td> <td align="right">   5 </td> <td align="right"> 0.69 </td> <td align="right"> 0.34 </td> <td align="right"> 0.04 </td> <td align="right"> 0.08 </td> </tr>
-  <tr> <td> 6 </td> <td align="right">   6 </td> <td align="right"> 0.70 </td> <td align="right"> 0.36 </td> <td align="right"> 0.05 </td> <td align="right"> 0.09 </td> </tr>
-  <tr> <td> 7 </td> <td align="right">   7 </td> <td align="right"> 0.70 </td> <td align="right"> 0.35 </td> <td align="right"> 0.04 </td> <td align="right"> 0.08 </td> </tr>
-  <tr> <td> 8 </td> <td align="right">   8 </td> <td align="right"> 0.70 </td> <td align="right"> 0.36 </td> <td align="right"> 0.04 </td> <td align="right"> 0.07 </td> </tr>
-  <tr> <td> 9 </td> <td align="right">   9 </td> <td align="right"> 0.70 </td> <td align="right"> 0.36 </td> <td align="right"> 0.04 </td> <td align="right"> 0.08 </td> </tr>
-  <tr> <td> 10 </td> <td align="right">  10 </td> <td align="right"> 0.71 </td> <td align="right"> 0.37 </td> <td align="right"> 0.04 </td> <td align="right"> 0.08 </td> </tr>
-  <tr> <td> 11 </td> <td align="right">  11 </td> <td align="right"> 0.71 </td> <td align="right"> 0.38 </td> <td align="right"> 0.04 </td> <td align="right"> 0.07 </td> </tr>
-  <tr> <td> 12 </td> <td align="right">  12 </td> <td align="right"> 0.71 </td> <td align="right"> 0.38 </td> <td align="right"> 0.04 </td> <td align="right"> 0.09 </td> </tr>
-  <tr> <td> 13 </td> <td align="right">  13 </td> <td align="right"> 0.71 </td> <td align="right"> 0.39 </td> <td align="right"> 0.04 </td> <td align="right"> 0.07 </td> </tr>
-  <tr> <td> 14 </td> <td align="right">  14 </td> <td align="right"> 0.72 </td> <td align="right"> 0.39 </td> <td align="right"> 0.04 </td> <td align="right"> 0.07 </td> </tr>
-  <tr> <td> 15 </td> <td align="right">  15 </td> <td align="right"> 0.71 </td> <td align="right"> 0.38 </td> <td align="right"> 0.04 </td> <td align="right"> 0.09 </td> </tr>
-  <tr> <td> 16 </td> <td align="right">  16 </td> <td align="right"> 0.71 </td> <td align="right"> 0.37 </td> <td align="right"> 0.05 </td> <td align="right"> 0.09 </td> </tr>
-  <tr> <td> 17 </td> <td align="right">  17 </td> <td align="right"> 0.72 </td> <td align="right"> 0.39 </td> <td align="right"> 0.04 </td> <td align="right"> 0.09 </td> </tr>
-  <tr> <td> 18 </td> <td align="right">  18 </td> <td align="right"> 0.71 </td> <td align="right"> 0.38 </td> <td align="right"> 0.04 </td> <td align="right"> 0.08 </td> </tr>
-  <tr> <td> 19 </td> <td align="right">  19 </td> <td align="right"> 0.71 </td> <td align="right"> 0.36 </td> <td align="right"> 0.04 </td> <td align="right"> 0.08 </td> </tr>
-  <tr> <td> 20 </td> <td align="right">  20 </td> <td align="right"> 0.71 </td> <td align="right"> 0.37 </td> <td align="right"> 0.03 </td> <td align="right"> 0.07 </td> </tr>
-  <tr> <td> 21 </td> <td align="right">  21 </td> <td align="right"> 0.71 </td> <td align="right"> 0.37 </td> <td align="right"> 0.03 </td> <td align="right"> 0.08 </td> </tr>
-  <tr> <td> 22 </td> <td align="right">  22 </td> <td align="right"> 0.71 </td> <td align="right"> 0.37 </td> <td align="right"> 0.03 </td> <td align="right"> 0.07 </td> </tr>
-  <tr> <td> 23 </td> <td align="right">  23 </td> <td align="right"> 0.71 </td> <td align="right"> 0.36 </td> <td align="right"> 0.03 </td> <td align="right"> 0.07 </td> </tr>
-  <tr> <td> 24 </td> <td align="right">  24 </td> <td align="right"> 0.71 </td> <td align="right"> 0.37 </td> <td align="right"> 0.03 </td> <td align="right"> 0.07 </td> </tr>
-  <tr> <td> 25 </td> <td align="right">  25 </td> <td align="right"> 0.71 </td> <td align="right"> 0.37 </td> <td align="right"> 0.04 </td> <td align="right"> 0.08 </td> </tr>
-  <tr> <td> 26 </td> <td align="right">  26 </td> <td align="right"> 0.71 </td> <td align="right"> 0.38 </td> <td align="right"> 0.04 </td> <td align="right"> 0.09 </td> </tr>
-  <tr> <td> 27 </td> <td align="right">  27 </td> <td align="right"> 0.71 </td> <td align="right"> 0.38 </td> <td align="right"> 0.03 </td> <td align="right"> 0.08 </td> </tr>
-  <tr> <td> 28 </td> <td align="right">  28 </td> <td align="right"> 0.72 </td> <td align="right"> 0.38 </td> <td align="right"> 0.03 </td> <td align="right"> 0.07 </td> </tr>
-  <tr> <td> 29 </td> <td align="right">  29 </td> <td align="right"> 0.72 </td> <td align="right"> 0.38 </td> <td align="right"> 0.03 </td> <td align="right"> 0.08 </td> </tr>
-  <tr> <td> 30 </td> <td align="right">  30 </td> <td align="right"> 0.71 </td> <td align="right"> 0.38 </td> <td align="right"> 0.04 </td> <td align="right"> 0.09 </td> </tr>
-   </table>
+
+```r
+knn_fit$results
+```
+
+```
+##     k  Accuracy     Kappa AccuracySD    KappaSD
+## 1   1 0.6896819 0.3321063 0.04254971 0.09263948
+## 2   2 0.6990280 0.3538687 0.05042353 0.10916349
+## 3   3 0.6971848 0.3487796 0.04771307 0.10376887
+## 4   4 0.6972111 0.3483215 0.05214732 0.10806761
+## 5   5 0.6944162 0.3434870 0.04234239 0.08312180
+## 6   6 0.7028628 0.3612155 0.04500631 0.09085001
+## 7   7 0.6954122 0.3458162 0.04268293 0.08405527
+## 8   8 0.7009592 0.3591907 0.03651074 0.06655244
+## 9   9 0.7028718 0.3637702 0.04131470 0.07956975
+## 10 10 0.7075099 0.3714192 0.04162599 0.08380993
+## 11 11 0.7103225 0.3778771 0.03770324 0.07344567
+## 12 12 0.7094139 0.3774971 0.04149781 0.08513499
+## 13 13 0.7149869 0.3883344 0.03519244 0.07140077
+## 14 14 0.7150218 0.3875047 0.03676830 0.07345591
+## 15 15 0.7113097 0.3793108 0.04247936 0.08903697
+## 16 16 0.7084796 0.3731874 0.04560078 0.09423627
+## 17 17 0.7178346 0.3913480 0.04111672 0.08718350
+## 18 18 0.7131703 0.3799901 0.03662609 0.07670596
+## 19 19 0.7066456 0.3629696 0.03782947 0.08194424
+## 20 20 0.7084798 0.3669370 0.03190863 0.06975017
+## 21 21 0.7122268 0.3749979 0.03415286 0.07566456
+## 22 22 0.7094056 0.3678481 0.02932583 0.06609833
+## 23 23 0.7065842 0.3612636 0.02842313 0.06559356
+## 24 24 0.7094054 0.3685464 0.03122861 0.06904943
+## 25 25 0.7112398 0.3746705 0.03891331 0.08496743
+## 26 26 0.7140522 0.3797552 0.03803511 0.08506928
+## 27 27 0.7140522 0.3803761 0.03463166 0.07776308
+## 28 28 0.7159300 0.3846383 0.03395814 0.07434971
+## 29 29 0.7159039 0.3844158 0.03446271 0.07655765
+## 30 30 0.7130828 0.3783018 0.03754836 0.08681035
+```
 
 Using the best K = 17. We can make predictions on the data set and calculate the confusion matrix.
 
@@ -333,7 +336,6 @@ The CV evaluation score table is below.
 
 
 ```python
-print(
 pd.DataFrame({'K':results['param_n_neighbors'].data,
               'Train Accuracy Average':results['mean_train_Accuracy'],
               'Train Accuracy Standard Error':results['std_train_Accuracy'],
@@ -342,7 +344,7 @@ pd.DataFrame({'K':results['param_n_neighbors'].data,
               'Train Kappa Average':results['mean_train_Kappa'],
               'Train Kappa Standard Error':results['std_train_Kappa'],
               'Test Kappa Average':results['mean_test_Kappa'],
-              'Test Kappa Standard Error':results['std_test_Kappa']}))
+              'Test Kappa Standard Error':results['std_test_Kappa']})
 ```
 
 ```
@@ -447,7 +449,7 @@ ggplot(results,aes(x=k)) +
   scale_colour_discrete(name = "Evaluation metrics")
 ```
 
-![](knn_in_r_and_python_wb_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+{{< figure library="1" src="knn r 1.png" title="KNN CV Test Accuracy and Kappa" >}}
 
 #### Python
 
@@ -464,23 +466,9 @@ plt.ylabel("Score")
 
 ax = plt.gca()
 ax.set_xlim(0, 30)
-```
-
-```
-## (0, 30)
-```
-
-```python
 ax.set_ylim(0, 1)
 
 # Get the regular numpy array from the MaskedArray
-```
-
-```
-## (0, 1)
-```
-
-```python
 X_axis = np.array(results['param_n_neighbors'].data, dtype=float)
 
 for scorer, color in zip(sorted(scoring), ['g', 'k']):
@@ -510,7 +498,7 @@ plt.grid(False)
 plt.show()
 ```
 
-<img src="knn_in_r_and_python_wb_files/figure-html/unnamed-chunk-16-1.png" width="1920" />
+{{< figure library="1" src="knn python 1.png" title="KNN CV Train and Test Accuracy and Kappa" >}}
 
 The second plot is the ROC curve using the predictions made by the best K.
 
@@ -527,7 +515,7 @@ mtext(paste("Area under the curve:", round(auc(roc),4)),side=3,line=2)
 title(main="KNN ROC Curve",line=3)
 ```
 
-![](knn_in_r_and_python_wb_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
+{{< figure library="1" src="knn r 2.png" title="KNN ROC Curve" >}}
 
 #### Python
 
@@ -539,27 +527,13 @@ train_y_bin=(np.array(train_y) == 'CH').astype(int)
 fpr, tpr, th = roc_curve(train_y_bin, pred_prob)
 roc_auc = auc(fpr,tpr)
 
-plt.figure(figsize=(5,5))
+plt.figure(figsize=(10,10))
 lw = 2
 plt.plot(fpr, tpr, color='darkorange',
          lw=lw, label='ROC curve (area = %0.2f)' % roc_auc)
 plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
 plt.xlim([0.0, 1.0])
-```
-
-```
-## (0.0, 1.0)
-```
-
-```python
 plt.ylim([0.0, 1.05])
-```
-
-```
-## (0.0, 1.05)
-```
-
-```python
 plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
 plt.title('KNN ROC Curve')
@@ -567,7 +541,7 @@ plt.legend(loc="lower right")
 plt.show()
 ```
 
-<img src="knn_in_r_and_python_wb_files/figure-html/unnamed-chunk-18-1.png" width="480" />
+{{< figure library="1" src="knn python 2.png" title="KNN ROC Curve" >}}
 
 The last plot is the decision boundary plot for different stores (1, 2, 3, 4 and 7).
 
@@ -605,7 +579,7 @@ for (i in 1:5) {
 grid.arrange(plot_1,plot_2,plot_3,plot_4,plot_5,ncol=2)
 ```
 
-![](knn_in_r_and_python_wb_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
+{{< figure library="1" src="knn r 3.png" title="KNN Decision Boundaries" >}}
 
 #### Python
 
@@ -658,4 +632,4 @@ for idx,grid_ind,tt,tb_X in zip(product([0,1,2],[0, 1]),
 plt.show()
 ```
 
-<img src="knn_in_r_and_python_wb_files/figure-html/unnamed-chunk-20-1.png" width="1920" />
+{{< figure library="1" src="knn python 3.png" title="KNN Decision Boundaries" >}}
