@@ -129,7 +129,7 @@ D\_{ij}=\begin{cases}1 & \text{if }x\_{cat}\text{ is different for observation }
 This is equivalent to using $\sqrt{0.5}$ instead of 1 in one hot encoding on the categorical variable and keeping all levels instead of removing one of them. For example, a categorical variable with 3 levels
 
 <!-- html table generated in R 3.4.4 by xtable 1.8-3 package -->
-<!-- Tue Apr 16 05:11:19 2019 -->
+<!-- Tue Apr 16 23:39:30 2019 -->
 <table border=1>
 <tr> <th>  </th> <th> Cat </th>  </tr>
   <tr> <td> 1 </td> <td align="right"> A </td> </tr>
@@ -143,7 +143,7 @@ This is equivalent to using $\sqrt{0.5}$ instead of 1 in one hot encoding on the
 becomes:
 
 <!-- html table generated in R 3.4.4 by xtable 1.8-3 package -->
-<!-- Tue Apr 16 05:11:20 2019 -->
+<!-- Tue Apr 16 23:39:31 2019 -->
 <table border=1>
 <tr> <th>  </th> <th> Cat_A </th> <th> Cat_B </th> <th> Cat_C </th>  </tr>
   <tr> <td> 1 </td> <td align="right"> 0.7071 </td> <td align="right"> 0.0000 </td> <td align="right"> 0.0000 </td> </tr>
@@ -156,9 +156,9 @@ becomes:
 
 One can definetly use a different distance function for categorical predictors. The scaling value can be picked using cross validation instead of $\sqrt{0.5}$.
 
-Same goes for the continuous predictors. Instead of the Euclidean distance which I will be using here, one can consider using Manhattan or other distance functions.
+Same goes for the continuous predictors. Instead of Euclidean distance which I will be using here, one can consider using Manhattan or other distance functions.
 
-Since I will use the Euclidean distance, continuous predictors should be standardized before putting into the KNN model.
+Since I will use Euclidean distance, continuous predictors should be standardized before putting into the KNN model.
 
 #### R
 
@@ -175,7 +175,7 @@ train=data.frame(response=data_scaled$Purchase,X_reconst)
 
 #### Python
 
-The StandardScaler API in sklearn package divides the centered column by its population standard error instead of the sample standard error. For consistency, we will manually standardize our data using the sample standard error
+The StandardScaler API in sklearn package divides the centered column by its population standard error instead of the sample standard error. For consistency, we will manually standardize our data using the sample standard error.
 
 
 ```python
@@ -200,13 +200,13 @@ train_X=train.drop(columns=['response'])
 
 #### R
 
-I will use caret library to perform a 10-fold cross validation to choose the best K which gives the highest accuracy. Caret uses kknn library to build the KNN model.
+I will use caret library to perform a 10-fold cross validation to choose the best K which gives the highest accuracy. Caret uses kknn library to build KNN model.
 
 
 ```r
 set.seed(1)
 trControl=trainControl(method="cv",number=10)
-knn_fit=train(response~.,method="knn",tuneGrid=expand.grid(k = 1:30),trControl  = trControl,metric="Accuracy",data=train)
+knn_fit=train(response~.,method="knn",tuneGrid=expand.grid(k = 1:50),trControl  = trControl,metric="Accuracy",data=train)
 results=knn_fit$results
 best_index=c(which(results$Accuracy==max(results$Accuracy)),
              which(results$Kappa==max(results$Kappa)))
@@ -226,36 +226,56 @@ knn_fit$results
 
 ```
 ##     k  Accuracy     Kappa AccuracySD    KappaSD
-## 1   1 0.6896819 0.3321063 0.04254971 0.09263948
-## 2   2 0.6990280 0.3538687 0.05042353 0.10916349
-## 3   3 0.6971848 0.3487796 0.04771307 0.10376887
-## 4   4 0.6972111 0.3483215 0.05214732 0.10806761
-## 5   5 0.6944162 0.3434870 0.04234239 0.08312180
-## 6   6 0.7028628 0.3612155 0.04500631 0.09085001
-## 7   7 0.6954122 0.3458162 0.04268293 0.08405527
-## 8   8 0.7009592 0.3591907 0.03651074 0.06655244
-## 9   9 0.7028718 0.3637702 0.04131470 0.07956975
-## 10 10 0.7075099 0.3714192 0.04162599 0.08380993
-## 11 11 0.7103225 0.3778771 0.03770324 0.07344567
-## 12 12 0.7094139 0.3774971 0.04149781 0.08513499
-## 13 13 0.7149869 0.3883344 0.03519244 0.07140077
-## 14 14 0.7150218 0.3875047 0.03676830 0.07345591
-## 15 15 0.7113097 0.3793108 0.04247936 0.08903697
-## 16 16 0.7084796 0.3731874 0.04560078 0.09423627
-## 17 17 0.7178346 0.3913480 0.04111672 0.08718350
-## 18 18 0.7131703 0.3799901 0.03662609 0.07670596
-## 19 19 0.7066456 0.3629696 0.03782947 0.08194424
-## 20 20 0.7084798 0.3669370 0.03190863 0.06975017
-## 21 21 0.7122268 0.3749979 0.03415286 0.07566456
-## 22 22 0.7094056 0.3678481 0.02932583 0.06609833
-## 23 23 0.7065842 0.3612636 0.02842313 0.06559356
-## 24 24 0.7094054 0.3685464 0.03122861 0.06904943
-## 25 25 0.7112398 0.3746705 0.03891331 0.08496743
-## 26 26 0.7140522 0.3797552 0.03803511 0.08506928
-## 27 27 0.7140522 0.3803761 0.03463166 0.07776308
-## 28 28 0.7159300 0.3846383 0.03395814 0.07434971
-## 29 29 0.7159039 0.3844158 0.03446271 0.07655765
-## 30 30 0.7130828 0.3783018 0.03754836 0.08681035
+## 1   1 0.6906251 0.3339171 0.04325921 0.09322526
+## 2   2 0.6980585 0.3511190 0.04550928 0.09864504
+## 3   3 0.6934290 0.3395603 0.04777551 0.10433323
+## 4   4 0.6953333 0.3448852 0.04714897 0.09586986
+## 5   5 0.7009411 0.3565917 0.04563272 0.09145467
+## 6   6 0.7028715 0.3624516 0.04743864 0.09545828
+## 7   7 0.7001025 0.3550791 0.04874492 0.09846450
+## 8   8 0.7018852 0.3609174 0.03928283 0.07391403
+## 9   9 0.7010113 0.3601562 0.04007041 0.07817554
+## 10 10 0.7103138 0.3777522 0.03874655 0.07693057
+## 11 11 0.7084445 0.3733371 0.03898741 0.07618079
+## 12 12 0.7084881 0.3753050 0.03707404 0.07509543
+## 13 13 0.7150130 0.3897513 0.04197951 0.08401486
+## 14 14 0.7131700 0.3847856 0.04171897 0.08297062
+## 15 15 0.7113008 0.3791715 0.03970402 0.08423190
+## 16 16 0.7112922 0.3787823 0.04191011 0.08746329
+## 17 17 0.7168913 0.3886331 0.04242106 0.08907640
+## 18 18 0.7150395 0.3845364 0.03693784 0.07807783
+## 19 19 0.7085147 0.3677854 0.03923434 0.08399743
+## 20 20 0.7094232 0.3689265 0.03379248 0.07193130
+## 21 21 0.7131613 0.3773893 0.03478404 0.07656444
+## 22 22 0.7093879 0.3678677 0.03141898 0.07014651
+## 23 23 0.7075450 0.3631170 0.02974805 0.06786983
+## 24 24 0.7093967 0.3684234 0.03006633 0.06729417
+## 25 25 0.7131089 0.3795246 0.03930901 0.08424363
+## 26 26 0.7168559 0.3868948 0.03949694 0.08684174
+## 27 27 0.7159213 0.3851036 0.03600363 0.07985073
+## 28 28 0.7149954 0.3823052 0.03310564 0.07276067
+## 29 29 0.7131001 0.3772896 0.03298208 0.07506067
+## 30 30 0.7130740 0.3782465 0.03838892 0.08874797
+## 31 31 0.7112398 0.3748180 0.03505459 0.08230128
+## 32 32 0.7093706 0.3699765 0.03560543 0.08502194
+## 33 33 0.7121744 0.3771933 0.03542564 0.08247653
+## 34 34 0.7102965 0.3745923 0.03635678 0.08112295
+## 35 35 0.7093620 0.3721274 0.03700545 0.08351759
+## 36 36 0.7046976 0.3606155 0.03500373 0.07937940
+## 37 37 0.7074926 0.3683375 0.03769912 0.08311352
+## 38 38 0.7009764 0.3523413 0.03526293 0.07738195
+## 39 39 0.7009850 0.3513413 0.03463369 0.07623113
+## 40 40 0.7019111 0.3529251 0.03537222 0.07867791
+## 41 41 0.6990896 0.3464938 0.03098402 0.06809844
+## 42 42 0.7037628 0.3569029 0.03371521 0.07402020
+## 43 43 0.7028369 0.3546439 0.03269867 0.07150443
+## 44 44 0.7056406 0.3589693 0.03620287 0.08261948
+## 45 45 0.7056405 0.3584023 0.03540265 0.08015793
+## 46 46 0.7121394 0.3714603 0.03140217 0.07517304
+## 47 47 0.7102701 0.3673315 0.03086107 0.07441626
+## 48 48 0.7046538 0.3542232 0.03594853 0.08270633
+## 49 49 0.7027846 0.3501847 0.03920179 0.08895475
+## 50 50 0.7009591 0.3466634 0.03861344 0.08863902
 ```
 
 Using the best K = 17. We can make predictions on the data set and calculate the confusion matrix.
@@ -296,7 +316,7 @@ I use the neighbors API from sklearn package to perform the same 10-fold CV in o
 
 ```python
 knn_model = neighbors.KNeighborsClassifier(algorithm="brute")
-param_grid = {'n_neighbors': np.arange(1, 31)}
+param_grid = {'n_neighbors': np.arange(1, 51)}
 scoring = {"Accuracy": make_scorer(accuracy_score), "Kappa": make_scorer(cohen_kappa_score)}
 kappa_scorer = make_scorer(cohen_kappa_score)
 
@@ -312,7 +332,8 @@ knn_fit.fit(train_X, train_y)
 ##            weights='uniform'),
 ##        fit_params=None, iid='warn', n_jobs=None,
 ##        param_grid={'n_neighbors': array([ 1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17,
-##        18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30])},
+##        18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34,
+##        35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50])},
 ##        pre_dispatch='2*n_jobs', refit='Accuracy', return_train_score=True,
 ##        scoring={'Accuracy': make_scorer(accuracy_score), 'Kappa': make_scorer(cohen_kappa_score)},
 ##        verbose=0)
@@ -330,7 +351,7 @@ print("The best K is " + str(knn_fit.best_params_['n_neighbors']) + " based on 1
 ## The best K is 30 based on 10-fold CV.
 ```
 
-Note that 30 is returned as the best K while it is 17 from R. This can be caused by different CV partitions when using different packages. R caret doesn't return the average and the standard error of the training set for CV procedure.
+Note that 30 is returned as the best K while it is 17 from R. This can be caused by the different CV partitions when using different packages. R caret doesn't return the average and the standard error of the training set for CV procedure.
 
 The CV evaluation score table is below.
 
@@ -379,8 +400,28 @@ pd.DataFrame({'K':results['param_n_neighbors'].data,
 ## 27  28                0.719524  ...            0.331585                   0.050655
 ## 28  29                0.722015  ...            0.334613                   0.070841
 ## 29  30                0.718897  ...            0.339948                   0.066611
+## 30  31                0.721390  ...            0.327925                   0.077337
+## 31  32                0.719003  ...            0.331800                   0.065902
+## 32  33                0.720874  ...            0.316898                   0.091178
+## 33  34                0.718278  ...            0.312371                   0.063170
+## 34  35                0.722429  ...            0.332830                   0.100608
+## 35  36                0.719212  ...            0.315752                   0.078186
+## 36  37                0.721080  ...            0.325660                   0.091494
+## 37  38                0.717964  ...            0.327913                   0.079653
+## 38  39                0.720559  ...            0.320427                   0.086273
+## 39  40                0.716825  ...            0.326568                   0.041247
+## 40  41                0.720975  ...            0.333124                   0.072326
+## 41  42                0.720872  ...            0.338615                   0.059139
+## 42  43                0.721703  ...            0.346141                   0.064937
+## 43  44                0.719835  ...            0.327249                   0.067968
+## 44  45                0.723469  ...            0.328841                   0.078471
+## 45  46                0.721185  ...            0.311362                   0.070268
+## 46  47                0.722639  ...            0.316281                   0.073649
+## 47  48                0.720249  ...            0.311617                   0.078312
+## 48  49                0.721600  ...            0.328555                   0.077470
+## 49  50                0.719106  ...            0.316695                   0.069817
 ## 
-## [30 rows x 9 columns]
+## [50 rows x 9 columns]
 ```
 
 We use the best K = 30 on the data set to make predictions. The confusion matrix is below.
@@ -465,7 +506,7 @@ plt.xlabel("K")
 plt.ylabel("Score")
 
 ax = plt.gca()
-ax.set_xlim(0, 30)
+ax.set_xlim(0, 50)
 ax.set_ylim(0, 1)
 
 # Get the regular numpy array from the MaskedArray
